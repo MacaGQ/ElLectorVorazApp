@@ -1,0 +1,7 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Ícono seleccionado -->
+    <item android:color="#000000" android:state_checked="true" />
+
+    <!-- Ícono no seleccionado por defecto -->
+    <item android:color="#BDBDBD" />
+</selector>
