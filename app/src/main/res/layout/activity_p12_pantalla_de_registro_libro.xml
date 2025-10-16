@@ -139,13 +139,13 @@
                 android:textColorHint="#2A2A2A" />
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnContinuar"
+                android:id="@+id/btnRegistrar"
                 android:layout_width="296dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="80dp"
-                android:text="Continuar"
+                android:text="Registrar"
                 android:textColor="#2A2A2A"
                 android:background="@drawable/button_border_3"
                 android:textSize="18sp"
