@@ -14,4 +14,6 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="texto_registro">¡El registro fue realizado <b>satisfactoriamente</b>!</string>
+    <string name="texto_registro_libro">El libro se ha incorporado al sistema de forma correcta</string>
+    <string name="texto_registro_libro_incorrecto">El libro no se ha incorporado al sistema de forma correcta</string>
 </resources>
