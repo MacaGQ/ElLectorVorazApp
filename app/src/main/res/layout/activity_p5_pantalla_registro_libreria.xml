@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f5f5f5"
+    android:orientation="horizontal"
+    tools:context=".P5_PantallaRegistroLibreria">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#f5f5f5"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView_NombreApp_1"
+            android:layout_width="193dp"
+            android:layout_height="52dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="45dp"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="sans-serif"
+            android:text="LOGOTIPO"
+            android:textColor="#2A2A2A"
+            android:textSize="48sp"
+            android:textStyle="normal" />
+
+
+        <ImageView
+            android:id="@+id/flechaVolver"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="20dp"
+            android:contentDescription="Ir a pantalla anterior"
+            android:src="@drawable/arrow_back_24px" />
+
+        <TextView
+            android:id="@+id/textView_Registro"
+            android:layout_width="114dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="40dp"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="sans-serif"
+            android:text="Registrarse"
+            android:textColor="#2A2A2A"
+            android:textSize="36sp"
+            android:textStyle="normal" />
+
+        <EditText
+            android:id="@+id/Usuario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="30dp"
+            android:ems="10"
+            android:fontFamily="sans-serif"
+            android:hint="Usuario"
+            android:inputType="text"
+            android:textColor="#A6A5A5"
+            android:textColorHint="#A6A5A5"
+            android:textSize="16sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:background="#f5f5f5" />
+
+        <EditText
+            android:id="@+id/Clave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="30dp"
+            android:ems="10"
+            android:fontFamily="sans-serif"
+            android:hint="Contraseña"
+            android:inputType="textPassword"
+            android:textColor="#A6A5A5"
+            android:textColorHint="#A6A5A5"
+            android:textSize="16sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:background="#f5f5f5" />
+
+        <EditText
+            android:id="@+id/Rol"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="30dp"
+            android:ems="10"
+            android:fontFamily="sans-serif"
+            android:hint="Rol"
+            android:inputType="textPassword"
+            android:textColor="#A6A5A5"
+            android:textColorHint="#A6A5A5"
+            android:textSize="16sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnRegistrar"
+            android:layout_width="296dp"
+            android:layout_height="61dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="86dp"
+            android:background="@drawable/button_border_1"
+            android:text="Registrarse"
+            android:textAllCaps="false"
+            android:textColor="#2A2A2A"
+            android:textSize="32sp" />
+
+        <TextView
+            android:id="@+id/textView_Pregunta_registro"
+            android:layout_width="263dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="70dp"
+            android:autoSizeTextType="uniform"
+            android:fontFamily="sans-serif"
+            android:text="¿Ya tenés cuenta? Iniciá sesión"
+            android:textColor="#2A2A2A"
+            android:textSize="13sp"
+            android:textStyle="normal" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#f5f5f5" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        android:background="#f5f5f5"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:background="#f5f5f5" />
+
+    </LinearLayout>
+
+
+</LinearLayout>
