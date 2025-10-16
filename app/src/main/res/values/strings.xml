@@ -16,4 +16,8 @@
     <string name="texto_registro">¡El registro fue realizado <b>satisfactoriamente</b>!</string>
     <string name="texto_registro_libro">El libro se ha incorporado al sistema de forma correcta</string>
     <string name="texto_registro_libro_incorrecto">El libro no se ha incorporado al sistema de forma correcta</string>
+    <string name="texto_registro_revista">La revista se ha incorporado al sistema de forma correcta</string>
+    <string name="texto_registro_revista_incorrecto">La revista no se ha incorporado al sistema de forma correcta</string>
+    <string name="texto_registro_articulo_incorrecto">El artículo no se ha incorporado al sistema de forma correcta</string>
+    <string name="texto_registro_articulo">El artículo se ha incorporado al sistema de forma correcta</string>
 </resources>
