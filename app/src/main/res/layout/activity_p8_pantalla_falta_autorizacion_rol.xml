@@ -43,7 +43,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/check_circle_24px" />
+            android:src="@android:drawable/btn_dialog" />
 
         <View
             android:layout_width="match_parent"
