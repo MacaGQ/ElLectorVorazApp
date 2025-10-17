@@ -3,11 +3,17 @@ package com.example.ellectorvoraz
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageView
 
 class P7_PantallaSistemaGeneral : Activity() {
     override fun onCreate(saveInstanceState: Bundle?) {
         super.onCreate(saveInstanceState)
         setContentView(R.layout.activity_p7_pantalla_sistema_general)
+
+        val btnVolver = findViewById<ImageView>(R.id.flechaVolver)
+        btnVolver.setOnClickListener(){
+            finish()
+        }
 
         val btnCatalogo = findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.btnCatalogos)
         btnCatalogo.setOnClickListener(){
