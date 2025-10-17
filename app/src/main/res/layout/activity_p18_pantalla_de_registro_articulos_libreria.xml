@@ -42,7 +42,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:text="REGISTRO DE ARTICULOS DE LIBRERIA"
+                    android:text="REGISTRO DE ARTICULOS"
                     android:textColor="#2A2A2A"
                     android:textSize="18sp"
                     android:fontFamily="sans-serif-medium"
