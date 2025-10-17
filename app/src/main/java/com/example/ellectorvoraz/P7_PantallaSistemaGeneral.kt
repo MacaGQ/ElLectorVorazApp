@@ -11,7 +11,7 @@ class P7_PantallaSistemaGeneral : Activity() {
 
         val btnCatalogo = findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.btnCatalogos)
         btnCatalogo.setOnClickListener(){
-            val intent = Intent(this, P10_PantallaDeSistemaParticular::class.java)
+            val intent = Intent(this, P9_PantallaDeCatalogos::class.java)
             startActivity(intent)
         }
 
