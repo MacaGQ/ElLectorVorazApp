@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f5f5f5"
+    android:orientation="horizontal"
+    tools:context=".P35_PantallaLibroEncontradoSeleccionado">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingTop="65dp"
+        android:paddingEnd="20dp">
+
+        <ImageView
+            android:id="@+id/flechaVolver"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:contentDescription="Volver"
+            android:src="@drawable/arrow_back_24px" />
+
+    </RelativeLayout>
+</LinearLayout>
