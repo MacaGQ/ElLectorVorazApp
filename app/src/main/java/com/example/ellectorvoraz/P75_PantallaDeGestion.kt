@@ -4,10 +4,10 @@ import android.app.Activity
 import android.os.Bundle
 import android.widget.ImageView
 
-class P9_PantallaDeCatalogos : Activity() {
+class P75_PantallaDeGestion : Activity() {
     override fun onCreate(saveInstanceState: Bundle?) {
         super.onCreate(saveInstanceState)
-        setContentView(R.layout.activity_p9_pantalla_de_catalogos)
+        setContentView(R.layout.activity_p75_pantalla_de_gestion)
 
         val btnVolver = findViewById<ImageView>(R.id.flechaVolver)
         btnVolver.setOnClickListener(){
