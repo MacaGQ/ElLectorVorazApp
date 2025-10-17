@@ -20,4 +20,10 @@
     <string name="texto_registro_revista_incorrecto">La revista no se ha incorporado al sistema de forma correcta</string>
     <string name="texto_registro_articulo_incorrecto">El artículo no se ha incorporado al sistema de forma correcta</string>
     <string name="texto_registro_articulo">El artículo se ha incorporado al sistema de forma correcta</string>
+    <string name="gestion_titulo">GESTIÓN</string>
+    <string name="gestion_btn_pedidos">Pedidos</string>
+    <string name="gestion_btn_ventas">Ventas</string>
+    <string name="gestion_btn_proveedores">Proveedores</string>
+
+
 </resources>
