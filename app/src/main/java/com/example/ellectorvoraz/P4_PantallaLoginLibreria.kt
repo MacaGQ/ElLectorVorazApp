@@ -10,21 +10,24 @@ class P4_PantallaLoginLibreria : Activity() {
     override fun onCreate(saveInstanceState: Bundle?) {
         super.onCreate(saveInstanceState)
         setContentView(R.layout.activity_p4_pantalla_login_libreria)
-        val flechaVolver = findViewById<ImageView>(R.id.flechaVolver)
+        val flechaVolver = findViewById<ImageView>(R.id.login_img_back)
         flechaVolver.setOnClickListener {
             finish()
         }
 
-        val btnIngresar = findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.btnIngresar)
+        val btnIngresar = findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.login_btnLogin)
         btnIngresar.setOnClickListener {
+            // Logica para iniciar sesion con autenticación
             val intent = Intent(this, P7_PantallaSistemaGeneral::class.java)
             startActivity(intent)
+            this.finish()
         }
 
-        val btnRegistro = findViewById<TextView>(R.id.textView_Pregunta_registro)
+        val btnRegistro = findViewById<TextView>(R.id.login_txt_signup)
         btnRegistro.setOnClickListener {
             val intent = Intent(this, P5_PantallaRegistroLibreria::class.java)
             startActivity(intent)
+            this.finish()
         }
     }
 }
