@@ -3,7 +3,7 @@
     <solid android:color="#cb8665" />
     <stroke
         android:width="2dp"
-        android:color="#cb8665"
+        android:color="@color/btn_bg"
         />
     <corners android:radius="8dp" />
 </shape>

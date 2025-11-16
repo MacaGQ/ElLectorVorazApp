@@ -20,14 +20,12 @@ class P4_PantallaLoginLibreria : Activity() {
             // Logica para iniciar sesion con autenticación
             val intent = Intent(this, P7_PantallaSistemaGeneral::class.java)
             startActivity(intent)
-            this.finish()
         }
 
         val btnRegistro = findViewById<TextView>(R.id.login_txt_signup)
         btnRegistro.setOnClickListener {
             val intent = Intent(this, P5_PantallaRegistroLibreria::class.java)
             startActivity(intent)
-            this.finish()
         }
     }
 }
