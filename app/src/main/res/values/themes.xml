@@ -21,4 +21,12 @@
         <item name="displayOptions">showTitle</item>
     </style>
 
+    <style name="bottomNavBarStyle" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:layout_height">69dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="itemIconTint">@color/selector_icon_color</item>
+        <item name="itemTextColor">@color/selector_icon_color</item>
+        <item name="labelVisibilityMode">labeled</item>
+    </style>
+
 </resources>
