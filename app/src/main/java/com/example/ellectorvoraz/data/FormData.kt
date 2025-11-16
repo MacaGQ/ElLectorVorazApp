@@ -27,6 +27,7 @@ data class FormScreen(
 object FormRepository {
     fun getFormForType(formType: String): FormScreen? {
         return when (formType) {
+            // P12 - Registro de Libros
             "REGISTRO_LIBRO" -> FormScreen(
                 title = "REGISTRO DE LIBROS",
                 fields = listOf(
@@ -40,6 +41,8 @@ object FormRepository {
                     FormField("stock", "Stock", InputType.TYPE_CLASS_NUMBER)
                 )
             )
+
+            // P15 - Registro de Revistas
             "REGISTRO_REVISTA" -> FormScreen(
                 title = "REGISTRO DE REVISTAS",
                 fields = listOf(
@@ -53,6 +56,8 @@ object FormRepository {
                     FormField("stock", "Stock", InputType.TYPE_CLASS_NUMBER)
                 )
             )
+
+            // P18 - Registro de Articulos
             "REGISTRO_ARTICULO" -> FormScreen(
                 title = "REGISTRO DE ARTICULOS",
                 fields = listOf(

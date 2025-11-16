@@ -20,6 +20,8 @@ class P12_PantallaDeRegistroReutilizable : BaseActivity() {
         setContentView(R.layout.activity_p12_pantalla_de_registro_reutilizable)
 
         // Obtener el tipo de form a crear (defaultea a registro de libro)
+        // El tipo de form se define en el intent de la actividad anterior
+        // El contenido del form se crea en data/FormData
         val formType = intent.getStringExtra(EXTRA_FORM_TYPE) ?: "REGISTRO_LIBRO"
         val formScreen = FormRepository.getFormForType(formType)
 

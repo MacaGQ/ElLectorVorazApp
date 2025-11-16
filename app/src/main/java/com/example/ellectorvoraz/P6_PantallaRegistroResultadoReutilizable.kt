@@ -44,8 +44,11 @@ class P6_PantallaRegistroResultadoReutilizable : Activity() {
         var mensaje = ""
 
         val result = when (task) {
+            // P13-14
             "book" -> getString(R.string.book)
+            // P16-17
             "magazine" -> getString(R.string.magazine)
+            // P19-20
             "supply" -> getString(R.string.supply)
             "register" -> getString(R.string.user)
             else -> "" // Agregar caso default
@@ -66,7 +69,7 @@ class P6_PantallaRegistroResultadoReutilizable : Activity() {
 
         txtResultado.text = mensaje
 
-        // Si se viene del registro de usuario, cambiar el boton a inciar sesión y dirigirlo al Login
+        // Si se viene del registro de usuario, cambiar el boton a iniciar sesión y dirigirlo al Login
         if (task == "register") {
             btnVolver.text = getString(R.string.action_sign_in)
             nextScreen = P4_PantallaLoginLibreria::class.java
