@@ -20,6 +20,7 @@
         <activity android:name=".P7_PantallaSistemaGeneral" />
         <activity android:name=".P13_PantallaRegistroLibroCorrecto" />
         <activity android:name=".P9_PantallaDeCatalogos" />
+        <activity android:name=".P12_PantallaDeRegistroLibro" />
         <activity
             android:name=".P4_PantallaLoginLibreria"
             android:exported="true"

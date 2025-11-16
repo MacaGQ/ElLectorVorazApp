@@ -39,6 +39,9 @@
     <string name="btn_gestion">Gestión</string>
     <string name="btn_eventos">Eventos</string>
 
+    <!--Formularios-->
+    <string name="btn_registrar">Registrar</string>
+
     <string name="welcome">"Welcome !"</string>
 
     <string name="texto_registro">¡El registro fue realizado <b>satisfactoriamente</b>!</string>
