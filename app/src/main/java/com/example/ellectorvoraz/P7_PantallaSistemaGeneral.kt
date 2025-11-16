@@ -1,9 +1,8 @@
 package com.example.ellectorvoraz
 
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
-import androidx.appcompat.widget.AppCompatButton
+import androidx.recyclerview.widget.RecyclerView
 import com.example.ellectorvoraz.data.MenuRepository
 
 class P7_PantallaSistemaGeneral : BaseActivity() {
@@ -36,25 +35,10 @@ class P7_PantallaSistemaGeneral : BaseActivity() {
         setupBottomNav()
 
         // Carga de los datos anteriores en al UI
-        val buttons = listOf(
-            findViewById<AppCompatButton>(R.id.btn1),
-            findViewById<AppCompatButton>(R.id.btn2),
-            findViewById<AppCompatButton>(R.id.btn3)
-        )
+        val recyclerView = findViewById<RecyclerView>(R.id.menu_recycler_view)
 
-        // Configurar los botones
-        for (i in buttons.indices) {
-            if (i < menuScreen.buttons.size) {
-                val buttonData = menuScreen.buttons[i]
-                buttons[i].text = buttonData.text
-                buttons[i].setOnClickListener {
-                    val intent = buttonData.createIntentAction(this)
-                    startActivity(intent)
-                }
-            } else {
-                // Esconder el boton si no hay data
-                buttons[i].visibility = View.GONE
-            }
-        }
+        val adapter = MenuButtonAdapter(menuScreen.buttons)
+
+        recyclerView.adapter = adapter
     }
 }

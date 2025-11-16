@@ -6,78 +6,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    android:orientation="vertical"
     tools:context=".P7_PantallaSistemaGeneral">
 
-    <ScrollView
-        android:layout_width="match_parent"
+    <LinearLayout
         android:layout_height="match_parent"
+        android:layout_width="match_parent"
         android:layout_above="@+id/bottom_navigation"
-        android:background="@color/background"
-        android:fillViewport="true" >
+        android:gravity="center"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id = "@+id/menu_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="30dp">
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_menu_button"
+            tools:itemCount="2">
+        </androidx.recyclerview.widget.RecyclerView>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1.2"
-                android:background="@drawable/button_border_1"
-                android:text="Catálogos"
-                android:textAllCaps="false"
-                android:textColor="@color/text"
-                android:textSize="32sp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.5"/>
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn2"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1.2"
-                android:background="@drawable/button_border_1"
-                android:text="Gestión"
-                android:textAllCaps="false"
-                android:textColor="@color/text"
-                android:textSize="32sp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.5"/>
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn3"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1.2"
-                android:background="@drawable/button_border_1"
-                android:text="Eventos"
-                android:textAllCaps="false"
-                android:textColor="@color/text"
-                android:textSize="32sp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
-
-        </LinearLayout>
-    </ScrollView>
+    </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

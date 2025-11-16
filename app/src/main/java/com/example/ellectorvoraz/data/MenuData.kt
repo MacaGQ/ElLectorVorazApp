@@ -56,11 +56,38 @@ object MenuRepository {
         )
     )
 
+    private fun getLibreriaBusqueda(context: Context) = MenuScreen(
+        title = "BUSQUEDA DE LIBROS",
+        buttons = listOf(
+            MenuButton(
+                text = "Título",
+                createIntentAction = { createMenuIntent(context, "LIBRERIA_BUSQUEDA_TITULO") }
+            ),
+            MenuButton(
+                text = "Autor",
+                createIntentAction = { createMenuIntent(context, "LIBRERIA_BUSQUEDA_AUTOR") }
+            ),
+            MenuButton(
+                text = "Editorial",
+                createIntentAction = { createMenuIntent(context, "LIBRERIA_BUSQUEDA_EDITORIAL") }
+            ),
+            MenuButton(
+                text = "ISBN",
+                createIntentAction = { createMenuIntent(context, "LIBRERIA_BUSQUEDA_ISBN") }
+            ),
+            MenuButton(
+                text = "Género",
+                createIntentAction = { createMenuIntent(context, "LIBRERIA_BUSQUEDA_GENERO") }
+            )
+        )
+    )
+
     // Navegacion
     fun getMenuScreenForType(context: Context, menuType: String): MenuScreen? {
         return when (menuType) {
             "LIBRERIA_MAIN" -> getLibreriaMain(context)
             "LIBRERIA_CATALOGO" -> getLibreriaCatalogos(context)
+            "LIBRERIA_BUSQUEDA" -> getLibreriaBusqueda(context)
             else -> null
         }
     }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.AppCompatButton xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/menu_button"
+    android:layout_width="match_parent"
+    android:layout_height="130dp"
+    android:layout_marginTop="15dp"
+    android:layout_marginBottom="15dp"
+    android:layout_marginStart="30dp"
+    android:layout_marginEnd="30dp"
+    android:background="@drawable/button_border_1"
+    android:text="Button Text"
+    android:textAllCaps="false"
+    android:textColor="@color/text"
+    android:textSize="32sp" />
