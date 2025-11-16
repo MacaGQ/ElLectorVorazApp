@@ -17,7 +17,9 @@
             android:exported="false"
             android:label="@string/title_activity_login" />-->
         <activity android:name=".P5_PantallaRegistroLibreria" />
-        <activity android:name=".P7_PantallaSistemaGeneral" />
+        <activity
+            android:name=".P7_PantallaSistemaGeneral"
+            />
         <activity
             android:name=".P4_PantallaLoginLibreria"
             android:exported="true"
@@ -29,5 +31,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

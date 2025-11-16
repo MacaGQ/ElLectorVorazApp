@@ -1,15 +1,19 @@
 <resources>
     <string name="app_name">ElLectorVoraz</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <!--Nav Bar-->
+    <string name="nav_inicio">Inicio</string>
+    <string name="nav_compras">Compras</string>
+    <string name="nav_avisos">Avisos</string>
+    <string name="nav_perfil">Perfil</string>
+
+    <!--Login-->
     <string name="title_activity_login">Iniciar Sesión</string>
-<!--    <string name="prompt_email">Email</string>-->
     <string name="prompt_username">Usuario</string>
     <string name="prompt_password">Contraseña</string>
     <string name="action_sign_in">Iniciar Sesión</string>
     <string name="go_to_sign_up">¿No tienes una cuenta? <u>Registrate</u></string>
 
+    <!--Registro-->
     <string name="action_sign_up">Registrarse</string>
     <string name="go_to_sign_in">¿Ya tienes una cuenta? <u>Iniciar Sesión</u></string>
     <string-array name="roles">
@@ -19,11 +23,14 @@
         <item>Empleado Cafeteria</item>
     </string-array>
 
+    <!--Sector Libreria-->
+    <string name="sector_libreria">SECTOR LIBRERIA</string>
+    <string name="btn_catalogos">Catálogos</string>
+    <string name="btn_gestion">Gestión</string>
+    <string name="btn_eventos">Eventos</string>
+
     <string name="welcome">"Welcome !"</string>
-<!--    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>-->
-    <!---->
+
     <string name="texto_registro">¡El registro fue realizado <b>satisfactoriamente</b>!</string>
     <string name="texto_registro_libro">El libro se ha incorporado al sistema de forma correcta</string>
     <string name="texto_registro_libro_incorrecto">El libro no se ha incorporado al sistema de forma correcta</string>
