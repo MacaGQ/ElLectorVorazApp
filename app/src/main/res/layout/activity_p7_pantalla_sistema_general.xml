@@ -29,7 +29,7 @@
                 android:layout_weight="1"/>
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnCatalogos"
+                android:id="@+id/btn1"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1.2"
@@ -45,7 +45,7 @@
                 android:layout_weight="0.5"/>
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnGestion"
+                android:id="@+id/btn2"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1.2"
@@ -61,7 +61,7 @@
                 android:layout_weight="0.5"/>
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnEventos"
+                android:id="@+id/btn3"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1.2"

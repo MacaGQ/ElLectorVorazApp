@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
+import com.example.ellectorvoraz.P7_PantallaSistemaGeneral.Companion.EXTRA_MENU_TYPE
 
 class P4_PantallaLoginLibreria : Activity() {
     override fun onCreate(saveInstanceState: Bundle?) {
@@ -19,6 +20,7 @@ class P4_PantallaLoginLibreria : Activity() {
         btnIngresar.setOnClickListener {
             // Logica para iniciar sesion con autenticación
             val intent = Intent(this, P7_PantallaSistemaGeneral::class.java)
+            intent.putExtra(EXTRA_MENU_TYPE, "LIBRERIA_MAIN")
             startActivity(intent)
         }
 
