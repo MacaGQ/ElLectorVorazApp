@@ -5,7 +5,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ellectorvoraz.data.MenuRepository
 
-class P7_PantallaSistemaGeneral : BaseActivity() {
+class P7_PantallaMenuOpcionesReutilizable : BaseActivity() {
 
     // Datos necesarios para crear las diferentes pantallas con el mismo layout
     companion object {
@@ -14,7 +14,7 @@ class P7_PantallaSistemaGeneral : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_p7_pantalla_sistema_general)
+        setContentView(R.layout.activity_p7_menu_opciones_reutilizable)
 
 
         // Datos recibidos del intent en la pantalla anterior

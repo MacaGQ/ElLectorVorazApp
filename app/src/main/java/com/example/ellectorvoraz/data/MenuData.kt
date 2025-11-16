@@ -2,7 +2,7 @@ package com.example.ellectorvoraz.data
 
 import android.content.Context
 import android.content.Intent
-import com.example.ellectorvoraz.P7_PantallaSistemaGeneral
+import com.example.ellectorvoraz.P7_PantallaMenuOpcionesReutilizable
 
 // Crear boton: texto e intent
 data class MenuButton (
@@ -20,7 +20,12 @@ data class MenuScreen(
 object MenuRepository {
 
     // Aca se agrega cada menu con sus botones
-    private fun getLibreriaMain(context: Context) = MenuScreen(
+    // title = Titulo del Menu (aparece en la actionbar)
+    // buttons = cada boton el intent de a qué pantalla/menu tiene que ir
+    // Hay que modificar "createIntentAction" de acuerdo a donde tiene que ir cada botón
+
+    // P7 - Sistema General
+    private fun getLibreriaGeneral(context: Context) = MenuScreen(
         title = "SECTOR LIBRERIA",
         buttons = listOf(
             MenuButton(
@@ -38,6 +43,7 @@ object MenuRepository {
         )
     )
 
+    // P9 - Pantalla de Catálogos
     private fun getLibreriaCatalogos(context: Context) = MenuScreen(
         title = "CATALOGOS",
         buttons = listOf(
@@ -56,6 +62,45 @@ object MenuRepository {
         )
     )
 
+    // P10 - Pantalla de Sistema Particular
+    private fun getLibreriaParticular(context: Context) = MenuScreen(
+        title = "BIENVENIDOS",
+        buttons = listOf(
+            MenuButton(
+                text = "Búsqueda",
+                createIntentAction = { createMenuIntent(context, "LIBRERIA_BUSQUEDA") }
+            ),
+            MenuButton(
+                text = "Listados",
+                createIntentAction = { createMenuIntent(context, "LIBRERIA_LISTADOS")}
+            ),
+            MenuButton(
+                text = "Registro",
+                createIntentAction = { createMenuIntent(context, "LIBRERIA_REGISTRO")}
+            ),
+        )
+    )
+
+    // P11 - Pantalla de Registros
+    private fun getLibreriaRegistros(context: Context) = MenuScreen(
+        title = "REGISTROS",
+        buttons = listOf(
+            MenuButton(
+                text = "Libros",
+                createIntentAction = { createMenuIntent(context, "LIBRERIA_REGISTROS_LIBROS") }
+            ),
+            MenuButton(
+                text = "Revistas",
+                createIntentAction = { createMenuIntent(context, "LIBRERIA_REGISTROS_REVISTAS") }
+            ),
+            MenuButton(
+                text = "Libreria",
+                createIntentAction = { createMenuIntent(context, "LIBRERIA_REGISTROS_LIBRERIA") }
+            )
+        )
+    )
+
+    // P22 - Busqueda de Libros
     private fun getLibreriaBusqueda(context: Context) = MenuScreen(
         title = "BUSQUEDA DE LIBROS",
         buttons = listOf(
@@ -82,19 +127,22 @@ object MenuRepository {
         )
     )
 
+
     // Navegacion
     fun getMenuScreenForType(context: Context, menuType: String): MenuScreen? {
         return when (menuType) {
-            "LIBRERIA_MAIN" -> getLibreriaMain(context)
+            "LIBRERIA_GENERAL" -> getLibreriaGeneral(context)
             "LIBRERIA_CATALOGO" -> getLibreriaCatalogos(context)
+            "LIBERERIA_PARTICULAR" -> getLibreriaParticular(context)
+            "LIBRERIA_REGISTROS" -> getLibreriaRegistros(context)
             "LIBRERIA_BUSQUEDA" -> getLibreriaBusqueda(context)
             else -> null
         }
     }
 
     private fun createMenuIntent(context: Context, menuType: String): Intent {
-        val intent = Intent(context, P7_PantallaSistemaGeneral::class.java)
-        intent.putExtra(P7_PantallaSistemaGeneral.EXTRA_MENU_TYPE, menuType)
+        val intent = Intent(context, P7_PantallaMenuOpcionesReutilizable::class.java)
+        intent.putExtra(P7_PantallaMenuOpcionesReutilizable.EXTRA_MENU_TYPE, menuType)
         return intent
 
     }

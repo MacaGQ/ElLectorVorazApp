@@ -20,7 +20,7 @@ class P5_PantallaRegistroLibreria : Activity() {
 
         val btnRegistrarse = findViewById<Button>(R.id.signup_btnSignup)
         btnRegistrarse.setOnClickListener {
-            val intent = Intent(this, P13_PantallaRegistroLibroCorrecto::class.java)
+            val intent = Intent(this, P6_PantallaRegistroResultadoReutilizable::class.java)
             intent.putExtra("status", "success")
             intent.putExtra("task", "register")
             startActivity(intent)

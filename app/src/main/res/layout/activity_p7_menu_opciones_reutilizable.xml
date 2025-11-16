@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    tools:context=".P7_PantallaSistemaGeneral">
+    tools:context=".P7_PantallaMenuOpcionesReutilizable">
 
     <LinearLayout
         android:layout_height="0dp"

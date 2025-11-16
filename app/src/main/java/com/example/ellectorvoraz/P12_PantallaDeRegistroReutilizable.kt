@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.ellectorvoraz.data.FormRepository
 
 
-class P12_PantallaDeRegistroLibro : BaseActivity() {
+class P12_PantallaDeRegistroReutilizable : BaseActivity() {
 
     companion object {
         const val EXTRA_FORM_TYPE = "EXTRA_FORM_TYPE"
@@ -17,7 +17,7 @@ class P12_PantallaDeRegistroLibro : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_p12_pantalla_de_registro_libro)
+        setContentView(R.layout.activity_p12_pantalla_de_registro_reutilizable)
 
         // Obtener el tipo de form a crear (defaultea a registro de libro)
         val formType = intent.getStringExtra(EXTRA_FORM_TYPE) ?: "REGISTRO_LIBRO"

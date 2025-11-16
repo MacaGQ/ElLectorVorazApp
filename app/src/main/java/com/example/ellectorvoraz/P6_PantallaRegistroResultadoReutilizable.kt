@@ -8,15 +8,16 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 
-class P13_PantallaRegistroLibroCorrecto : Activity() {
+class P6_PantallaRegistroResultadoReutilizable : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_p13_pantalla_registro_correcto)
+        setContentView(R.layout.activity_p6_pantalla_registro_resultado)
         val task = intent.getStringExtra("task")
         val status = intent.getStringExtra("status")
 
         val btnVolver = findViewById<Button>(R.id.btnVolver)
-        var nextScreen: Class<out Activity>? = P7_PantallaDeSistemaParticularProveedores::class.java
+        var nextScreen: Class<out Activity>? =
+            P7_PantallaMenuOpcionesReutilizable::class.java
 
 
         // Cambiar ícono y el texto de acuerdo al resultado de la operación

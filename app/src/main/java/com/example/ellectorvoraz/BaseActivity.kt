@@ -49,7 +49,7 @@ abstract class BaseActivity(): AppCompatActivity() {
         // Definir a qué pantalla ir según lo seleccionado
         bottomNav.setOnItemSelectedListener { item ->
             val nextActivity: KClass<*>? = when (item.itemId) {
-                R.id.navigation_home -> P7_PantallaSistemaGeneral::class // COMPLETAR DEMAS OPCIONES
+                R.id.navigation_home -> P7_PantallaMenuOpcionesReutilizable::class // COMPLETAR DEMAS OPCIONES
                 else -> null
             }
             // Solo cambiar de pantalla si se toca una opcion distinta a la pantalla actual
