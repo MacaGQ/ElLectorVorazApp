@@ -42,6 +42,9 @@
     <!--Formularios-->
     <string name="btn_registrar">Registrar</string>
 
+    <!--Catalogos-->
+    <string name="action_search">Buscar</string>
+
     <string name="welcome">"Welcome !"</string>
 
     <string name="texto_registro">¡El registro fue realizado <b>satisfactoriamente</b>!</string>
