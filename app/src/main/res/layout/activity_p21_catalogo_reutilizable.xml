@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".P21_PantallaCatalogoLibros">
+    tools:context=".P21_PantallaCatalogoReutilizable">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/catalog_recycler_view"

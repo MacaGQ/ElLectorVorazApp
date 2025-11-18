@@ -2,7 +2,7 @@ package com.example.ellectorvoraz.data
 
 import android.content.Context
 import android.content.Intent
-import com.example.ellectorvoraz.P21_PantallaCatalogoLibros
+import com.example.ellectorvoraz.P21_PantallaCatalogoReutilizable
 import com.example.ellectorvoraz.P7_PantallaMenuOpcionesReutilizable
 
 // Crear boton: texto e intent
@@ -51,24 +51,24 @@ object MenuRepository {
             MenuButton(
                 text = "Libros",
                 createIntentAction = {
-                    val intent = Intent(context, P21_PantallaCatalogoLibros::class.java)
-                    intent.putExtra(P21_PantallaCatalogoLibros.EXTRA_CATALOG_TYPE, "LIBROS")
+                    val intent = Intent(context, P21_PantallaCatalogoReutilizable::class.java)
+                    intent.putExtra(P21_PantallaCatalogoReutilizable.EXTRA_CATALOG_TYPE, "LIBROS")
                     intent
                 }
             ),
             MenuButton(
                 text = "Revistas",
                 createIntentAction = {
-                    val intent = Intent(context, P21_PantallaCatalogoLibros::class.java)
-                    intent.putExtra(P21_PantallaCatalogoLibros.EXTRA_CATALOG_TYPE, "REVISTAS")
+                    val intent = Intent(context, P21_PantallaCatalogoReutilizable::class.java)
+                    intent.putExtra(P21_PantallaCatalogoReutilizable.EXTRA_CATALOG_TYPE, "REVISTAS")
                     intent
                      }
             ),
             MenuButton(
                 text = "Articulos",
                 createIntentAction = {
-                    val intent = Intent(context, P21_PantallaCatalogoLibros::class.java)
-                    intent.putExtra(P21_PantallaCatalogoLibros.EXTRA_CATALOG_TYPE, "ARTICULOS")
+                    val intent = Intent(context, P21_PantallaCatalogoReutilizable::class.java)
+                    intent.putExtra(P21_PantallaCatalogoReutilizable.EXTRA_CATALOG_TYPE, "ARTICULOS")
                     intent
                 }
             )
