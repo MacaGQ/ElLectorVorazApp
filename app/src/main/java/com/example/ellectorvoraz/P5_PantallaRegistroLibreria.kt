@@ -50,6 +50,13 @@ class P5_PantallaRegistroLibreria : AppCompatActivity() {
             this.finish()
         }
 
+        val irAlLogin = findViewById<TextView>(R.id.signup_txt_login)
+        irAlLogin.setOnClickListener {
+            val intent = Intent(this, P4_PantallaLoginLibreria::class.java)
+            startActivity(intent)
+            this.finish()
+        }
+
         fetchRoles()
     }
 

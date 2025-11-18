@@ -1,6 +1,9 @@
 package com.example.ellectorvoraz
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ellectorvoraz.data.MenuRepository
@@ -41,4 +44,38 @@ class P7_PantallaMenuOpcionesReutilizable : BaseActivity() {
 
         recyclerView.adapter = adapter
     }
+
+    override fun onCreateOptionsMenu(menu:Menu): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_logout -> {
+            performLogout()
+            true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    // Cerrar Sesión
+    private fun performLogout() {
+        clearAuthToken()
+        goToLoginActivity()
+    }
+
+    private fun clearAuthToken() {
+        val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
+        sharedPreferences.edit().remove("AUTH_TOKEN").apply()
+    }
+
+    private fun goToLoginActivity() {
+        val intent = Intent(this, P4_PantallaLoginLibreria::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+    }
+
 }
