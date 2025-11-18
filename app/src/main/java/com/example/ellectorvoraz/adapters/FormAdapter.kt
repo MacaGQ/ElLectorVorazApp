@@ -1,4 +1,4 @@
-package com.example.ellectorvoraz
+package com.example.ellectorvoraz.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
+import com.example.ellectorvoraz.R
 import com.example.ellectorvoraz.data.FormField
 
 class FormAdapter (private val fields: List<FormField>) : RecyclerView.Adapter<FormAdapter.FieldViewHolder>(){

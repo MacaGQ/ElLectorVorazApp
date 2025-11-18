@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.ellectorvoraz.adapters.MenuButtonAdapter
 import com.example.ellectorvoraz.data.MenuRepository
 
 class P7_PantallaMenuOpcionesReutilizable : BaseActivity() {

@@ -12,6 +12,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Body
 import retrofit2.Response
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 
@@ -37,6 +38,9 @@ interface ApiService {
     @GET("libros")
     suspend fun getLibros(@Query("search") query: String?): Response<List<Libro>>
 
+    @GET("libros/{id}")
+    suspend fun getLibroId(@Path("id") id: Int): Response<Libro>
+
     // Ruta POST para agregar un libro
     @POST("libros")
     suspend fun agregarLibro(@Body libro: Libro): Response<Libro>
@@ -49,6 +53,9 @@ interface ApiService {
     @GET("revistas")
     suspend fun getRevistas(@Query("search") query: String?): Response<List<Revista>>
 
+    @GET("revistas/{id}")
+    suspend fun getRevistaId(@Path("id") id: Int): Response<Revista>
+
 
     // ----- Articulos Escolares -----
 
@@ -56,5 +63,8 @@ interface ApiService {
     // Si la query esta vacía devuelve todos los articulos
     @GET("articulos")
     suspend fun getArticulos(@Query("search") query: String?): Response<List<Articulo_Escolar>>
+
+    @GET("articulos/{id}")
+    suspend fun getArticuloId(@Path("id") id: Int): Response<Articulo_Escolar>
 
 }

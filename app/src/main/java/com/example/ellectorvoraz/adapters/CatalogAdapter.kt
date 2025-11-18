@@ -1,13 +1,15 @@
-package com.example.ellectorvoraz
+package com.example.ellectorvoraz.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.ellectorvoraz.R
 import com.example.ellectorvoraz.data.model.CatalogItem
 
-class CatalogAdapter (private var items: List<CatalogItem>) : RecyclerView.Adapter<CatalogAdapter.ViewHolder>() {
+class CatalogAdapter (private val onItemClicked: (CatalogItem) -> Unit) : RecyclerView.Adapter<CatalogAdapter.ViewHolder>() {
+    private var items: List<CatalogItem> = emptyList()
 
     // Vista de cada elemento
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -27,6 +29,10 @@ class CatalogAdapter (private var items: List<CatalogItem>) : RecyclerView.Adapt
         val item = items[position]
         holder.nameTextView.text = item.nombre
         holder.descriptionTextview.text = item.descripcion
+
+        holder.itemView.setOnClickListener {
+            onItemClicked(item)
+        }
 
     }
 

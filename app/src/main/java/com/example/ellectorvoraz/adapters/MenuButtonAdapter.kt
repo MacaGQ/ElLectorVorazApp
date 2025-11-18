@@ -1,4 +1,4 @@
-package com.example.ellectorvoraz
+package com.example.ellectorvoraz.adapters
 
 import android.view.LayoutInflater
 import com.example.ellectorvoraz.data.MenuButton
@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
+import com.example.ellectorvoraz.R
 
 
 class MenuButtonAdapter(

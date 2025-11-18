@@ -1,9 +1,11 @@
 package com.example.ellectorvoraz
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import com.example.ellectorvoraz.adapters.CatalogAdapter
 import com.example.ellectorvoraz.data.network.RetrofitClient
 import kotlinx.coroutines.launch
 
@@ -37,8 +39,15 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
 
         // Carga de los datos anteriores en la UI
         val recyclerView = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.catalog_recycler_view)
-        // Se inicializa el adaptador con una lista vacia. Se llena con la llamada a la API
-        catalogAdapter = CatalogAdapter(emptyList())
+
+
+        catalogAdapter = CatalogAdapter { clickedItem ->
+            val intent = Intent(this, P25_SeleccionElemento::class.java)
+            intent.putExtra("EXTRA_ITEM_ID", clickedItem.id)
+            intent.putExtra("EXTRA_CATALOG_TYPE", catalogType)
+            startActivity(intent)
+        }
+
         recyclerView.adapter = catalogAdapter
 
         // Cargar todos los datos
