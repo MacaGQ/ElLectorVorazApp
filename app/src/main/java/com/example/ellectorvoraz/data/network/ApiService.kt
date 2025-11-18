@@ -4,7 +4,10 @@ import com.example.ellectorvoraz.data.model.Articulo_Escolar
 import com.example.ellectorvoraz.data.model.Libro
 import com.example.ellectorvoraz.data.model.LoginRequest
 import com.example.ellectorvoraz.data.model.LoginResponse
+import com.example.ellectorvoraz.data.model.RegisterRequest
+import com.example.ellectorvoraz.data.model.RegisterResponse
 import com.example.ellectorvoraz.data.model.Revista
+import com.example.ellectorvoraz.data.model.Rol
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Body
@@ -16,9 +19,16 @@ import retrofit2.http.Query
 interface ApiService {
 
     // ----- Login -----
-
     @POST("auth/login")
     suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
+
+    // ----- Registro -----
+    @POST("auth/register")
+    suspend fun register(@Body registerRequest: RegisterRequest): Response<RegisterResponse>
+
+    // Obtener roles para la pantalla de registro
+    @GET("roles")
+    suspend fun getRoles(): Response<List<Rol>>
 
     // ----- Libros -----
 
