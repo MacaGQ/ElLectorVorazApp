@@ -1,7 +1,8 @@
 package com.example.ellectorvoraz.config
 
 object AppConfig {
-    // Para probar desde telefono fisico conectado a la computadora
+    // Para probar desde telefono fisico
     // ip de la computadora:puerto
-    const val BASE_URL = "http://192.168.100.53:3000"
+    // REEMPLAZAR CON VALORES REALES
+    const val BASE_URL = "IP:PUERTO"
 }
