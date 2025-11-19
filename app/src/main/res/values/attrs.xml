@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Cambiar el color del titulo de la action bar en tema claro/oscuro-->
+    <attr name="actionBarTitleColor" format="color" />
+</resources>
