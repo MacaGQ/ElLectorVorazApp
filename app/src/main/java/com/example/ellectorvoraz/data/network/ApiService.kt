@@ -1,9 +1,11 @@
 package com.example.ellectorvoraz.data.network
 
 import com.example.ellectorvoraz.data.model.Articulo_Escolar
+import com.example.ellectorvoraz.data.model.DetallePedido
 import com.example.ellectorvoraz.data.model.Libro
 import com.example.ellectorvoraz.data.model.LoginRequest
 import com.example.ellectorvoraz.data.model.LoginResponse
+import com.example.ellectorvoraz.data.model.Pedido
 import com.example.ellectorvoraz.data.model.RegisterRequest
 import com.example.ellectorvoraz.data.model.RegisterResponse
 import com.example.ellectorvoraz.data.model.Revista
@@ -67,4 +69,13 @@ interface ApiService {
     @GET("articulos/{id}")
     suspend fun getArticuloId(@Path("id") id: Int): Response<Articulo_Escolar>
 
+    // Pedidos
+    @GET("pedidos")
+    suspend fun getPedidos(): Response<List<Pedido>>
+
+    @GET("pedidos/{id}")
+    suspend fun getPedidoId(@Path("id") id: Int): Response<Pedido>
+
+    @GET("pedidos/{id}/detalles")
+    suspend fun getDetallePedido(@Path("id") id: Int): Response<List<DetallePedido>>
 }

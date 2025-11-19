@@ -140,6 +140,48 @@ object MenuRepository {
         )
     )
 
+    // P75 - Pantalla de Sistema Particular: Gestión
+    private fun getLibreriaGestion(context: Context) = MenuScreen(
+        title = "GESTION",
+        buttons = listOf(
+            MenuButton(
+                text = "Pedidos",
+                createIntentAction = { createMenuIntent(context, "LIBRERIA_GESTION_PEDIDOS") }
+            ),
+            MenuButton(
+                text = "Ventas",
+                createIntentAction = { createMenuIntent(context, "LIBRERIA_GESTION_VENTAS") }
+            ),
+            MenuButton(
+                text = "Proveedores",
+                createIntentAction = { createMenuIntent(context, "LIBRERIA_GESTION_PROVEEDORES") }
+            ),
+        )
+    )
+
+    // P76 - Pantalla de Sistema Particular: Pedidos
+    private fun getLibreriaPedidos(context: Context) = MenuScreen(
+        title = "GESTION DE PEDIDOS",
+        buttons = listOf(
+            MenuButton(
+                text = "Búsqueda",
+                createIntentAction = { createMenuIntent(context, "LIBRERIA_PEDIDOS_BUSQUEDA") }
+            ),
+            MenuButton(
+                text = "Listados",
+                createIntentAction = {
+                    val intent = Intent(context, P21_PantallaCatalogoReutilizable::class.java)
+                    intent.putExtra(P21_PantallaCatalogoReutilizable.EXTRA_CATALOG_TYPE, "PEDIDOS")
+                    intent
+                }
+            ),
+            MenuButton(
+                text = "Registro",
+                createIntentAction = { createMenuIntent(context, "LIBRERIA_PEDIDOS_REGISTRO") }
+            ),
+        )
+    )
+
 
     // Navegacion
     fun getMenuScreenForType(context: Context, menuType: String): MenuScreen? {
@@ -149,6 +191,8 @@ object MenuRepository {
             "LIBERERIA_PARTICULAR" -> getLibreriaParticular(context)
             "LIBRERIA_REGISTROS" -> getLibreriaRegistros(context)
             "LIBRERIA_BUSQUEDA" -> getLibreriaBusqueda(context)
+            "LIBRERIA_GESTION" -> getLibreriaGestion(context)
+            "LIBRERIA_GESTION_PEDIDOS" -> getLibreriaPedidos(context)
             else -> null
         }
     }

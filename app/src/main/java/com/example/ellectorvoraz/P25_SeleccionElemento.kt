@@ -9,10 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.ellectorvoraz.adapters.DetalleAdapter
 import com.example.ellectorvoraz.data.model.Articulo_Escolar
 import com.example.ellectorvoraz.data.model.DetalleCaracteristica
+import com.example.ellectorvoraz.data.model.DetallePedido
 import com.example.ellectorvoraz.data.model.Libro
+import com.example.ellectorvoraz.data.model.Pedido
 import com.example.ellectorvoraz.data.model.Revista
 import com.example.ellectorvoraz.data.network.RetrofitClient
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
 
 class P25_SeleccionElemento : BaseActivity() {
 
@@ -49,22 +52,52 @@ class P25_SeleccionElemento : BaseActivity() {
             try {
                 val api = RetrofitClient.getInstance(this@P25_SeleccionElemento)
 
-                val item: Any? = when (type) {
-                    "LIBROS" -> api.getLibroId(id).body()
-                    "REVISTAS" -> api.getRevistaId(id).body()
-                    "ARTICULOS" -> api.getArticuloId(id).body()
-                    else -> null
+                if (type == "PEDIDOS") {
+                    val pedidoDeferred = async { api.getPedidoId(id) }
+                    val detallesDeferred = async { api.getDetallePedido(id) }
+
+                    val pedidoResponse = pedidoDeferred.await()
+                    val detallesResponse = detallesDeferred.await()
+
+                    if (pedidoResponse.isSuccessful && detallesResponse.isSuccessful) {
+                        val pedido = pedidoResponse.body()
+                        val detalles = detallesResponse.body()
+
+                        if (pedido != null && detalles != null) {
+                            updateUiPorPedido(pedido, detalles)
+                        } else {
+                            Toast.makeText(
+                                this@P25_SeleccionElemento,
+                                "No se encontraron datos",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else {
+                        Toast.makeText(
+                            this@P25_SeleccionElemento,
+                            "Error al obtener detalles del pedido",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    val item: Any? = when (type) {
+                        "LIBROS" -> api.getLibroId(id).body()
+                        "REVISTAS" -> api.getRevistaId(id).body()
+                        "ARTICULOS" -> api.getArticuloId(id).body()
+                        else -> null
+                    }
+
+                    if (item != null) {
+                        updateUiWithItem(item)
+                    } else {
+                        Toast.makeText(
+                            this@P25_SeleccionElemento,
+                            "No se encontraron detalles",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
 
-                if (item != null) {
-                    updateUiWithItem(item)
-                } else {
-                    Toast.makeText(
-                        this@P25_SeleccionElemento,
-                        "No se encontraron detalles",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
             } catch (e: Exception) {
                 Log.e("DETALLE_ERROR", "Fallo al obtener detalles del item", e)
                 Toast.makeText(this@P25_SeleccionElemento, "Error al obtener detalles", Toast.LENGTH_SHORT).show()
@@ -119,5 +152,24 @@ class P25_SeleccionElemento : BaseActivity() {
             }
         }
         detalleRecyclerView.adapter = DetalleAdapter(caracteristicas)
+    }
+
+    private fun updateUiPorPedido(pedido: Pedido, detalles: List<DetallePedido>) {
+        tituloTextView.text = "Detalle del Pedido N° ${pedido.id}"
+        descripcionTextView.text = pedido.descripcion
+
+        val caracteristicas = mutableListOf<DetalleCaracteristica>()
+
+        detalles.forEach { detalle ->
+            caracteristicas.add(
+                DetalleCaracteristica(
+                    etiqueta = detalle.nombreProducto,
+                    valor = "Cantidad: ${detalle.cantidad} | Precio Unitario: ${detalle.precioUnitario}"
+                )
+            )
+        }
+
+        detalleRecyclerView.adapter = DetalleAdapter(caracteristicas)
+
     }
 }

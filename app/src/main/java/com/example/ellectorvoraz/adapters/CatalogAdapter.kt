@@ -15,7 +15,6 @@ class CatalogAdapter (private val onItemClicked: (CatalogItem) -> Unit) : Recycl
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val nameTextView: TextView = view.findViewById(R.id.item_title)
         val descriptionTextview: TextView = view.findViewById(R.id.item_description)
-       /* val imageView: ImageView = view.findViewById(R.id.item_image)*/
     }
 
     // Crea la vista para cada elemento

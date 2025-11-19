@@ -31,6 +31,7 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
             "LIBROS" -> "CATÁLOGO DE LIBROS"
             "REVISTAS" -> "CATÁLOGO DE REVISTAS"
             "ARTICULOS" -> "CATÁLOGO DE ARTÍCULOS"
+            "PEDIDOS" -> "LISTADO DE PEDIDOS"
             else -> "CATÁLOGO"
         }
 
@@ -67,6 +68,7 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
                     "LIBROS" -> api.getLibros(query)
                     "REVISTAS" -> api.getRevistas(query)
                     "ARTICULOS" -> api.getArticulos(query)
+                    "PEDIDOS" -> api.getPedidos()
                     else -> {
                         Log.e("API_CALL", "Catalogo desconocido: $catalogType")
                         null
@@ -84,7 +86,6 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
             } catch (e: Exception) {
                 Log.e("API_CALL", "Exception: ${e.message}")
                 Toast.makeText(this@P21_PantallaCatalogoReutilizable, "Error de conexion", Toast.LENGTH_SHORT).show()
-
             }
         }
     }
