@@ -1,6 +1,5 @@
 package com.example.ellectorvoraz.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,7 +32,6 @@ class CatalogAdapter (private val onItemClicked: (CatalogItem) -> Unit) : Recycl
         holder.itemView.setOnClickListener {
             onItemClicked(item)
         }
-
     }
 
     override fun getItemCount() = items.size

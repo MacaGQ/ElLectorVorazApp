@@ -1,6 +1,14 @@
 package com.example.ellectorvoraz.data
 
-import android.text.InputType
+// Definir los tipos de campo posible
+enum class FormFieldType {
+    TEXT,
+    NUMBER,
+    NUMBER_DECIMAL,
+    DATETIME,
+    ENTITY_SELECTOR
+}
+
 
 // Crear un campo del formulario
 data class FormField(
@@ -9,7 +17,8 @@ data class FormField(
     // Etiqueta visible del campo
     val label: String,
     // Defaultear el campo a texto, despues se modifica si es necesario
-    val inputType: Int = InputType.TYPE_CLASS_TEXT
+    val type: FormFieldType = FormFieldType.TEXT,
+    val entityType: String? = null
 )
 
 // Armar el formulario completo
@@ -27,52 +36,58 @@ data class FormScreen(
 object FormRepository {
     fun getFormForType(formType: String): FormScreen? {
         return when (formType) {
-            // P12 - Registro de Libros
-            "REGISTRO_LIBRO" -> FormScreen(
-                title = "REGISTRO DE LIBROS",
-                fields = listOf(
-                    FormField("autor","Autor"),
-                    FormField("titulo","Titulo"),
-                    FormField("editorial","Editorial"),
-                    FormField("isbn","ISBN"),
-                    FormField("genero","Género"),
-                    FormField("seccion","Sección"),
-                    FormField("precio","Precio", InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL),
-                    FormField("stock", "Stock", InputType.TYPE_CLASS_NUMBER)
-                )
-            )
-
-            // P15 - Registro de Revistas
-            "REGISTRO_REVISTA" -> FormScreen(
-                title = "REGISTRO DE REVISTAS",
-                fields = listOf(
-                    FormField("nombre", "Nombre"),
-                    FormField("fecha", "Fecha", InputType.TYPE_CLASS_DATETIME),
-                    FormField("edicion", "Edición del Año", InputType.TYPE_CLASS_NUMBER),
-                    FormField("numero", "Numero", InputType.TYPE_CLASS_NUMBER),
-                    FormField("issn", "ISSN", InputType.TYPE_CLASS_NUMBER),
-                    FormField("seccion", "Seccion"),
-                    FormField("precio", "Precio", InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL),
-                    FormField("stock", "Stock", InputType.TYPE_CLASS_NUMBER)
-                )
-            )
-
-            // P18 - Registro de Articulos
-            "REGISTRO_ARTICULO" -> FormScreen(
-                title = "REGISTRO DE ARTICULOS",
-                fields = listOf(
-                    FormField("nombre", "Nombre"),
-                    FormField("marca", "Marca"),
-                    FormField("descripcion", "Descripcion"),
-                    FormField("seccion", "Seccion"),
-                    FormField("precio", "Precio", InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL),
-                    FormField("stock", "Stock", InputType.TYPE_CLASS_NUMBER)
-                )
-            )
-
-
-
+            "LIBROS" -> getLibroForm()
+/*            "REVISTAS" -> getRevistaForm()
+            "ARTICULOS" -> getArticulosForm()*/
             else -> null
         }
     }
+            // P12 - Registro de Libros
+    private fun getLibroForm() = FormScreen (
+        title = "REGISTRO DE LIBROS",
+        fields = listOf(
+            FormField("autor","Autor"),
+            FormField("titulo","Titulo"),
+            FormField("editorial","Editorial"),
+            FormField("isbn","ISBN"),
+            FormField("genero","Género"),
+            FormField("seccion","Sección"),
+            FormField("precio","Precio", FormFieldType.NUMBER_DECIMAL),
+            FormField("stock", "Stock", FormFieldType.NUMBER),
+            FormField(
+                key = "proveedorId",
+                label = "Proveedor",
+                type = FormFieldType.ENTITY_SELECTOR,
+                entityType = "PROVEEDOR"
+            )
+        )
+    )
+
+    // P15 - Registro de Revistas
+    /*private fun getRevistaForm() = FormScreen (
+        title = "REGISTRO DE REVISTAS",
+        fields = listOf(
+            FormField("nombre", "Nombre"),
+            FormField("fecha", "Fecha", InputType.TYPE_CLASS_DATETIME),
+            FormField("edicion", "Edición del Año", InputType.TYPE_CLASS_NUMBER),
+            FormField("numero", "Numero", InputType.TYPE_CLASS_NUMBER),
+            FormField("issn", "ISSN", InputType.TYPE_CLASS_NUMBER),
+            FormField("seccion", "Seccion"),
+            FormField("precio", "Precio", InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL),
+            FormField("stock", "Stock", InputType.TYPE_CLASS_NUMBER)
+        )
+    )
+
+    // P18 - Registro de Articulos
+    private fun getArticulosForm() = FormScreen (
+        title = "REGISTRO DE ARTICULOS",
+        fields = listOf(
+            FormField("nombre", "Nombre"),
+            FormField("marca", "Marca"),
+            FormField("descripcion", "Descripcion"),
+            FormField("seccion", "Seccion"),
+            FormField("precio", "Precio", InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL),
+            FormField("stock", "Stock", InputType.TYPE_CLASS_NUMBER)
+        )
+    )*/
 }

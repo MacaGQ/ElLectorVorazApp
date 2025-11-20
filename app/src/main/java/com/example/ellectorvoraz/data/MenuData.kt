@@ -2,6 +2,7 @@ package com.example.ellectorvoraz.data
 
 import android.content.Context
 import android.content.Intent
+import com.example.ellectorvoraz.P12_PantallaDeRegistroReutilizable
 import com.example.ellectorvoraz.P21_PantallaCatalogoReutilizable
 import com.example.ellectorvoraz.P7_PantallaMenuOpcionesReutilizable
 
@@ -84,7 +85,15 @@ object MenuRepository {
             ),
             MenuButton(
                 text = "Registro",
-                createIntentAction = { createMenuIntent(context, "LIBRERIA_REGISTRO")}
+                createIntentAction = {
+                    if (contextType != null) {
+                        val intent = Intent(context, P12_PantallaDeRegistroReutilizable::class.java)
+                        intent.putExtra(P12_PantallaDeRegistroReutilizable.EXTRA_FORM_TYPE, contextType)
+                        intent
+                    } else {
+                        Intent()
+                    }
+                }
             ),
         )
     )
@@ -122,7 +131,7 @@ object MenuRepository {
             ),
             MenuButton(
                 text = "Proveedores",
-                createIntentAction = { createMenuIntent(context, "LIBRERIA_GESTION_PROVEEDORES") }
+                createIntentAction = { createParticularMenuIntent(context, "PROVEEDORES") }
             ),
         )
     )

@@ -3,9 +3,11 @@ package com.example.ellectorvoraz.data.network
 import com.example.ellectorvoraz.data.model.Articulo_Escolar
 import com.example.ellectorvoraz.data.model.DetallePedido
 import com.example.ellectorvoraz.data.model.Libro
+import com.example.ellectorvoraz.data.model.LibroRequest
 import com.example.ellectorvoraz.data.model.LoginRequest
 import com.example.ellectorvoraz.data.model.LoginResponse
 import com.example.ellectorvoraz.data.model.Pedido
+import com.example.ellectorvoraz.data.model.Proveedor
 import com.example.ellectorvoraz.data.model.RegisterRequest
 import com.example.ellectorvoraz.data.model.RegisterResponse
 import com.example.ellectorvoraz.data.model.Revista
@@ -34,17 +36,18 @@ interface ApiService {
 
     // ----- Libros -----
 
-    // Rutas GET para obtener libros de acuerdo a la query
+    // Ruta GET para obtener libros de acuerdo a la query (busqueda global o por filtros)
     // Si la query esta vacía devuelve todos los libros
     @GET("libros")
     suspend fun getLibros(@QueryMap options: Map<String, String>): Response<List<Libro>>
 
+    // Ruta GET para obtener un libro de acuerdo al id para mostrar los detalles
     @GET("libros/{id}")
     suspend fun getLibroId(@Path("id") id: Int): Response<Libro>
 
-    // Ruta POST para agregar un libro
+    // Ruta POST para agregar un libro a la base
     @POST("libros")
-    suspend fun agregarLibro(@Body libro: Libro): Response<Libro>
+    suspend fun createLibro(@Body libroRequest: LibroRequest): Response<Libro>
 
 
     // ----- Revistas -----
@@ -68,7 +71,8 @@ interface ApiService {
     @GET("articulos/{id}")
     suspend fun getArticuloId(@Path("id") id: Int): Response<Articulo_Escolar>
 
-    // Pedidos
+
+    // ----- Pedidos -----
     @GET("pedidos")
     suspend fun getPedidos(@QueryMap options: Map<String, String>): Response<List<Pedido>>
 
@@ -77,4 +81,12 @@ interface ApiService {
 
     @GET("pedidos/{id}/detalles")
     suspend fun getDetallePedido(@Path("id") id: Int): Response<List<DetallePedido>>
+
+
+    // ----- Proveedores -----
+    @GET("proveedores")
+    suspend fun getProveedores(@QueryMap options: Map<String, String>): Response<List<Proveedor>>
+
+
+
 }

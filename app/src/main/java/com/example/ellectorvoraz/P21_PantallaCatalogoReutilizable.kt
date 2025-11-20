@@ -14,16 +14,30 @@ import kotlinx.coroutines.launch
 
 class P21_PantallaCatalogoReutilizable : BaseActivity() {
     companion object {
+        // Tipo de catalogo que se va a cargar
         const val EXTRA_CATALOG_TYPE = "EXTRA_CATALOG_TYPE"
+
+        // Modo de operación:
+        // Modo Navegacion - Funciona como catalogo normal, al hacer click muestra los detalles
+        // Modo Seleccion - Funciona como selector (de proveedores) para los formularios de registro
+        const val EXTRA_OPERATION_MODE = "EXTRA_OPERATION_MODE"
+        const val MODE_NAVIGATION = "MODE_NAVIGATION"
+        const val MODE_SELECTION = "MODE_SELECTION"
+
+        // Se guardan el ID y Nombre del proveedor para mandar al formulario de registro
+        const val RESULT_SELECTED_ID = "RESULT_SELECTED_ID"
+        const val RESULT_SELECTED_NAME = "RESULT_SELECTED_NAME"
     }
 
     private lateinit var catalogAdapter: CatalogAdapter
+    private var operationMode: String = MODE_NAVIGATION
     private var criterioBusqueda: String = "search"
     private val criteriosDisponibles = mapOf(
         "LIBROS" to listOf("Todos", "Titulo", "Autor", "Editorial", "ISBN", "Genero"),
         "REVISTAS" to listOf("Todos", "Nombre", "Categoria", "ISSN"),
         "ARTICULOS" to listOf("Todos", "Nombre", "Marca", "Seccion", "Codigo"),
-        "PEDIDOS" to listOf("Todos", "Estado", "Proveedor", "Tipo de Producto" ,"Categoria")
+        "PEDIDOS" to listOf("Todos", "Estado", "Proveedor", "Tipo de Producto" ,"Categoria"),
+        "PROVEEDORES" to listOf("Todos", "Nombre", "Categoria")
     )
     private var searchJob: Job? = null
 
@@ -38,6 +52,8 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
 
         // Datos recibidos del intent en la pantalla anterior
         catalogType = intent.getStringExtra(EXTRA_CATALOG_TYPE) ?: "LIBROS"
+        operationMode = intent.getStringExtra(EXTRA_OPERATION_MODE) ?: MODE_NAVIGATION
+
 
         // Definicion del titulo de la pantalla
         val catalogTitle = when(catalogType) {
@@ -45,6 +61,7 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
             "REVISTAS" -> "CATÁLOGO DE REVISTAS"
             "ARTICULOS" -> "CATÁLOGO DE ARTÍCULOS"
             "PEDIDOS" -> "LISTADO DE PEDIDOS"
+            "PROVEEDORES" -> "LISTADO DE PROVEEDORES"
             else -> "CATÁLOGO"
         }
 
@@ -56,10 +73,21 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
 
 
         catalogAdapter = CatalogAdapter { clickedItem ->
-            val intent = Intent(this, P25_SeleccionElemento::class.java)
-            intent.putExtra("EXTRA_ITEM_ID", clickedItem.id)
-            intent.putExtra("EXTRA_CATALOG_TYPE", catalogType)
-            startActivity(intent)
+            when (operationMode) {
+                MODE_NAVIGATION -> {
+                    val intent = Intent(this, P25_SeleccionElemento::class.java)
+                    intent.putExtra("EXTRA_ITEM_ID", clickedItem.id)
+                    intent.putExtra("EXTRA_CATALOG_TYPE", catalogType)
+                    startActivity(intent)
+                }
+                MODE_SELECTION -> {
+                    val resultIntent = Intent()
+                    resultIntent.putExtra(RESULT_SELECTED_ID, clickedItem.id)
+                    resultIntent.putExtra(RESULT_SELECTED_NAME, clickedItem.nombre)
+                    setResult(RESULT_OK, resultIntent)
+                    finish()
+                }
+            }
         }
 
         recyclerView.adapter = catalogAdapter
@@ -70,7 +98,7 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
 
     // Busca los datos en la BBDD y los muestra
     // Si la query esta vacia, muestra todos los datos
-    // Si la query no esta vacia, muestra los datos que coincidan con la query
+    // Si la query no esta vacia, muestra los datos que coincidan con la query (global o por filtros)
     // El catalogo se arma en CatalogAdapter
     private fun performSearch(query:String) {
         lifecycleScope.launch {
@@ -93,6 +121,7 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
                     "REVISTAS" -> api.getRevistas(params)
                     "ARTICULOS" -> api.getArticulos(params)
                     "PEDIDOS" -> api.getPedidos(params)
+                    "PROVEEDORES" -> api.getProveedores(params)
                     else -> {
                         Log.e("API_CALL", "Catalogo desconocido: $catalogType")
                         null
