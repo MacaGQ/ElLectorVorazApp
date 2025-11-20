@@ -16,7 +16,7 @@ import retrofit2.http.Body
 import retrofit2.Response
 import retrofit2.http.Path
 import retrofit2.http.Query
-
+import retrofit2.http.QueryMap
 
 
 interface ApiService {
@@ -38,7 +38,7 @@ interface ApiService {
     // Rutas GET para obtener libros de acuerdo a la query
     // Si la query esta vacía devuelve todos los libros
     @GET("libros")
-    suspend fun getLibros(@Query("search") query: String?): Response<List<Libro>>
+    suspend fun getLibros(@QueryMap options: Map<String, String>): Response<List<Libro>>
 
     @GET("libros/{id}")
     suspend fun getLibroId(@Path("id") id: Int): Response<Libro>
