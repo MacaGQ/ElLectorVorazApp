@@ -20,6 +20,9 @@ data class MenuScreen(
 // Informacion de cada Menu
 object MenuRepository {
 
+    // Contexto extra para cargar el menu de acuerdo a de que pantalla se viene y reutilizar el menu particular
+    private const val EXTRA_CATALOG_CONTEXT = "EXTRA_CATALOG_CONTEXT"
+
     // Aca se agrega cada menu con sus botones
     // title = Titulo del Menu (aparece en la actionbar)
     // buttons = cada boton el intent de a qué pantalla/menu tiene que ir
@@ -50,42 +53,34 @@ object MenuRepository {
         buttons = listOf(
             MenuButton(
                 text = "Libros",
-                createIntentAction = {
-                    val intent = Intent(context, P21_PantallaCatalogoReutilizable::class.java)
-                    intent.putExtra(P21_PantallaCatalogoReutilizable.EXTRA_CATALOG_TYPE, "LIBROS")
-                    intent
-                }
+                createIntentAction = { createParticularMenuIntent(context, "LIBROS") }
             ),
             MenuButton(
                 text = "Revistas",
-                createIntentAction = {
-                    val intent = Intent(context, P21_PantallaCatalogoReutilizable::class.java)
-                    intent.putExtra(P21_PantallaCatalogoReutilizable.EXTRA_CATALOG_TYPE, "REVISTAS")
-                    intent
-                     }
+                createIntentAction = { createParticularMenuIntent(context, "REVISTAS") }
             ),
             MenuButton(
                 text = "Articulos",
-                createIntentAction = {
-                    val intent = Intent(context, P21_PantallaCatalogoReutilizable::class.java)
-                    intent.putExtra(P21_PantallaCatalogoReutilizable.EXTRA_CATALOG_TYPE, "ARTICULOS")
-                    intent
-                }
+                createIntentAction = { createParticularMenuIntent(context, "ARTICULOS") }
             )
         )
     )
 
-    // P10 - Pantalla de Sistema Particular
-    private fun getLibreriaParticular(context: Context) = MenuScreen(
-        title = "BIENVENIDOS",
+    // P10/P76 - Pantallas de Sistema Particular
+    private fun getLibreriaParticular(context: Context, contextType: String?) = MenuScreen(
+        title = contextType ?: "BIENVENIDOS",
         buttons = listOf(
             MenuButton(
-                text = "Búsqueda",
-                createIntentAction = { createMenuIntent(context, "LIBRERIA_BUSQUEDA") }
-            ),
-            MenuButton(
                 text = "Listados",
-                createIntentAction = { createMenuIntent(context, "LIBRERIA_LISTADOS")}
+                createIntentAction = {
+                    if (contextType != null) {
+                        val intent = Intent(context, P21_PantallaCatalogoReutilizable::class.java)
+                        intent.putExtra(P21_PantallaCatalogoReutilizable.EXTRA_CATALOG_TYPE, contextType)
+                        intent
+                    } else {
+                        createMenuIntent(context, "LIBRERIA_CATALOGO")
+                    }
+                }
             ),
             MenuButton(
                 text = "Registro",
@@ -113,40 +108,13 @@ object MenuRepository {
         )
     )
 
-    // P22 - Busqueda de Libros
-    private fun getLibreriaBusqueda(context: Context) = MenuScreen(
-        title = "BUSQUEDA DE LIBROS",
-        buttons = listOf(
-            MenuButton(
-                text = "Título",
-                createIntentAction = { createMenuIntent(context, "LIBRERIA_BUSQUEDA_TITULO") }
-            ),
-            MenuButton(
-                text = "Autor",
-                createIntentAction = { createMenuIntent(context, "LIBRERIA_BUSQUEDA_AUTOR") }
-            ),
-            MenuButton(
-                text = "Editorial",
-                createIntentAction = { createMenuIntent(context, "LIBRERIA_BUSQUEDA_EDITORIAL") }
-            ),
-            MenuButton(
-                text = "ISBN",
-                createIntentAction = { createMenuIntent(context, "LIBRERIA_BUSQUEDA_ISBN") }
-            ),
-            MenuButton(
-                text = "Género",
-                createIntentAction = { createMenuIntent(context, "LIBRERIA_BUSQUEDA_GENERO") }
-            )
-        )
-    )
-
     // P75 - Pantalla de Sistema Particular: Gestión
     private fun getLibreriaGestion(context: Context) = MenuScreen(
         title = "GESTION",
         buttons = listOf(
             MenuButton(
                 text = "Pedidos",
-                createIntentAction = { createMenuIntent(context, "LIBRERIA_GESTION_PEDIDOS") }
+                createIntentAction = { createParticularMenuIntent(context, "PEDIDOS") }
             ),
             MenuButton(
                 text = "Ventas",
@@ -159,40 +127,16 @@ object MenuRepository {
         )
     )
 
-    // P76 - Pantalla de Sistema Particular: Pedidos
-    private fun getLibreriaPedidos(context: Context) = MenuScreen(
-        title = "GESTION DE PEDIDOS",
-        buttons = listOf(
-            MenuButton(
-                text = "Búsqueda",
-                createIntentAction = { createMenuIntent(context, "LIBRERIA_PEDIDOS_BUSQUEDA") }
-            ),
-            MenuButton(
-                text = "Listados",
-                createIntentAction = {
-                    val intent = Intent(context, P21_PantallaCatalogoReutilizable::class.java)
-                    intent.putExtra(P21_PantallaCatalogoReutilizable.EXTRA_CATALOG_TYPE, "PEDIDOS")
-                    intent
-                }
-            ),
-            MenuButton(
-                text = "Registro",
-                createIntentAction = { createMenuIntent(context, "LIBRERIA_PEDIDOS_REGISTRO") }
-            ),
-        )
-    )
-
-
     // Navegacion
-    fun getMenuScreenForType(context: Context, menuType: String): MenuScreen? {
+    fun getMenuScreenForType(context: Context, intent: Intent): MenuScreen? {
+        val menuType = intent.getStringExtra(P7_PantallaMenuOpcionesReutilizable.EXTRA_MENU_TYPE)
+        val catalogContext = intent.getStringExtra(EXTRA_CATALOG_CONTEXT)
         return when (menuType) {
             "LIBRERIA_GENERAL" -> getLibreriaGeneral(context)
             "LIBRERIA_CATALOGO" -> getLibreriaCatalogos(context)
-            "LIBERERIA_PARTICULAR" -> getLibreriaParticular(context)
+            "LIBRERIA_PARTICULAR" -> getLibreriaParticular(context, catalogContext)
             "LIBRERIA_REGISTROS" -> getLibreriaRegistros(context)
-            "LIBRERIA_BUSQUEDA" -> getLibreriaBusqueda(context)
             "LIBRERIA_GESTION" -> getLibreriaGestion(context)
-            "LIBRERIA_GESTION_PEDIDOS" -> getLibreriaPedidos(context)
             else -> null
         }
     }
@@ -201,7 +145,13 @@ object MenuRepository {
         val intent = Intent(context, P7_PantallaMenuOpcionesReutilizable::class.java)
         intent.putExtra(P7_PantallaMenuOpcionesReutilizable.EXTRA_MENU_TYPE, menuType)
         return intent
+    }
 
+    private fun createParticularMenuIntent(context: Context, catalogType: String): Intent {
+        val intent = Intent(context, P7_PantallaMenuOpcionesReutilizable::class.java)
+        intent.putExtra(P7_PantallaMenuOpcionesReutilizable.EXTRA_MENU_TYPE, "LIBRERIA_PARTICULAR")
+        intent.putExtra(EXTRA_CATALOG_CONTEXT, catalogType)
+        return intent
     }
 }
 

@@ -4,9 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import com.example.ellectorvoraz.adapters.CatalogAdapter
 import com.example.ellectorvoraz.data.network.RetrofitClient
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class P21_PantallaCatalogoReutilizable : BaseActivity() {
@@ -15,6 +18,13 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
     }
 
     private lateinit var catalogAdapter: CatalogAdapter
+    private var criterioBusqueda: String = "search"
+    private val criteriosDisponibles = mapOf(
+        "LIBROS" to listOf("Todos", "Titulo", "Autor", "Editorial", "ISBN", "Genero")
+    )
+    private var searchJob: Job? = null
+
+    private lateinit var searchView: androidx.appcompat.widget.SearchView
 
     // Defaultea a catalogo de libros
     private var catalogType: String = "LIBROS"
@@ -64,8 +74,14 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
             try {
                 val api = RetrofitClient.getInstance(this@P21_PantallaCatalogoReutilizable)
 
+                val params = mutableMapOf<String, String>()
+                if (query.isNotBlank()) {
+                    val claveApi = if (criterioBusqueda == "Global") "search" else criterioBusqueda
+                    params[claveApi.lowercase()] = query
+                }
+
                 val response = when(catalogType) {
-                    "LIBROS" -> api.getLibros(query)
+                    "LIBROS" -> api.getLibros(params)
                     "REVISTAS" -> api.getRevistas(query)
                     "ARTICULOS" -> api.getArticulos(query)
                     "PEDIDOS" -> api.getPedidos()
@@ -95,21 +111,63 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
         menuInflater.inflate(R.menu.catalogo_menu, menu)
 
         val searchItem = menu.findItem(R.id.action_search)
-        val searchView = searchItem.actionView as androidx.appcompat.widget.SearchView
+        searchView = searchItem.actionView as androidx.appcompat.widget.SearchView
 
         searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                Toast.makeText(this@P21_PantallaCatalogoReutilizable, "Buscando: $query", Toast.LENGTH_SHORT).show()
+                searchJob?.cancel()
                 performSearch(query ?: "")
                 searchView.clearFocus()
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                searchJob?.cancel()
+                searchJob = lifecycleScope.launch {
+                    delay(500L)
+                    performSearch(newText ?: "")
+                }
                 return true
             }
         })
 
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_filter -> {
+                showFilterDialog()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun showFilterDialog() {
+        val filtros = criteriosDisponibles[catalogType] ?: return
+        val checkedItem = filtros.indexOf(criterioBusqueda).let { if (it == -1) 0 else it}
+
+        AlertDialog.Builder(this)
+            .setTitle("Seleccionar Criterio")
+            .setSingleChoiceItems(filtros.toTypedArray(), checkedItem) { dialog, which ->
+                criterioBusqueda = filtros[which]
+                Toast.makeText(
+                    this,
+                    "Criterio de busqueda cambiado a $criterioBusqueda",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                updateSearchHint()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun updateSearchHint() {
+        if (::searchView.isInitialized) {
+            searchView.queryHint = "Buscar por: $criterioBusqueda"
+        }
     }
 }

@@ -20,19 +20,14 @@ class P7_PantallaMenuOpcionesReutilizable : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_p7_menu_opciones_reutilizable)
 
-
-        // Datos recibidos del intent en la pantalla anterior
-        val menuType = intent.getStringExtra(EXTRA_MENU_TYPE) ?: "none"
-
         // Obtener el menu de MenuData
-        val menuScreen = MenuRepository.getMenuScreenForType(this, menuType)
+        val menuScreen = MenuRepository.getMenuScreenForType(this, intent)
 
         if (menuScreen == null) {
             Toast.makeText(this, "Menu no encontrado", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
-
 
         // Inicializacion de las barras de superior e inferior
         setupTopBar(menuScreen.title)
