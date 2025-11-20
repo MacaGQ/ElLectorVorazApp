@@ -27,7 +27,6 @@ class CatalogAdapter (private val onItemClicked: (CatalogItem) -> Unit) : Recycl
     // Carga los datos en la vista
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
-        Log.v("ADAPTER_BIND", "Binding en posicion $position: Nombre=${item.nombre}, Descripcion=${item.descripcion}")
         holder.nameTextView.text = item.nombre
         holder.descriptionTextview.text = item.descripcion
 

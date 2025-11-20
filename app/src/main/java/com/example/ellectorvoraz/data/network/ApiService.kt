@@ -70,7 +70,7 @@ interface ApiService {
 
     // Pedidos
     @GET("pedidos")
-    suspend fun getPedidos(): Response<List<Pedido>>
+    suspend fun getPedidos(@QueryMap options: Map<String, String>): Response<List<Pedido>>
 
     @GET("pedidos/{id}")
     suspend fun getPedidoId(@Path("id") id: Int): Response<Pedido>

@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 class P21_PantallaCatalogoReutilizable : BaseActivity() {
     companion object {
         const val EXTRA_CATALOG_TYPE = "EXTRA_CATALOG_TYPE"
-        private const val DEBUG_TAG = "CATALOG_FLOW"
     }
 
     private lateinit var catalogAdapter: CatalogAdapter
@@ -23,7 +22,8 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
     private val criteriosDisponibles = mapOf(
         "LIBROS" to listOf("Todos", "Titulo", "Autor", "Editorial", "ISBN", "Genero"),
         "REVISTAS" to listOf("Todos", "Nombre", "Categoria", "ISSN"),
-        "ARTICULOS" to listOf("Todos", "Nombre", "Marca", "Seccion", "Codigo")
+        "ARTICULOS" to listOf("Todos", "Nombre", "Marca", "Seccion", "Codigo"),
+        "PEDIDOS" to listOf("Todos", "Estado", "Proveedor", "Tipo de Producto" ,"Categoria")
     )
     private var searchJob: Job? = null
 
@@ -79,8 +79,12 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
 
                 val params = mutableMapOf<String, String>()
                 if (query.isNotBlank()) {
-                    Log.d(DEBUG_TAG, "Llamando a la API para $catalogType con query=$query y criterio=$criterioBusqueda. Params: $params")
-                    val claveApi = if (criterioBusqueda == "Global") "search" else criterioBusqueda
+                    val claveApi = when (criterioBusqueda) {
+                        "Todos" -> "search"
+                        "Proveedor" -> "nombre_proveedor"
+                        "Tipo de Producto" -> "tipo_producto"
+                        else -> criterioBusqueda.lowercase()
+                    }
                     params[claveApi.lowercase()] = query
                 }
 
@@ -88,7 +92,7 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
                     "LIBROS" -> api.getLibros(params)
                     "REVISTAS" -> api.getRevistas(params)
                     "ARTICULOS" -> api.getArticulos(params)
-                    "PEDIDOS" -> api.getPedidos()
+                    "PEDIDOS" -> api.getPedidos(params)
                     else -> {
                         Log.e("API_CALL", "Catalogo desconocido: $catalogType")
                         null
@@ -96,9 +100,7 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
                 }
 
                 if (response != null && response.isSuccessful) {
-                    Log.i(DEBUG_TAG, "Respuesta exitosa de la API. Codigo: ${response.code()}")
                     response.body()?.let { items ->
-                        Log.d(DEBUG_TAG, "Items recibidos: $items, pasando ${items.size} al adapter")
                         catalogAdapter.updateItems(items)
                     }
                 } else {
