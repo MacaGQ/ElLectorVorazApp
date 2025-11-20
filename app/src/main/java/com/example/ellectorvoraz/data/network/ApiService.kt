@@ -53,7 +53,7 @@ interface ApiService {
     // Ruta GET para obtener revistas
     // Si la query esta vacía devuelve todas las revistas
     @GET("revistas")
-    suspend fun getRevistas(@Query("search") query: String?): Response<List<Revista>>
+    suspend fun getRevistas(@QueryMap options: Map<String, String>): Response<List<Revista>>
 
     @GET("revistas/{id}")
     suspend fun getRevistaId(@Path("id") id: Int): Response<Revista>

@@ -15,12 +15,14 @@ import kotlinx.coroutines.launch
 class P21_PantallaCatalogoReutilizable : BaseActivity() {
     companion object {
         const val EXTRA_CATALOG_TYPE = "EXTRA_CATALOG_TYPE"
+        private const val DEBUG_TAG = "CATALOG_FLOW"
     }
 
     private lateinit var catalogAdapter: CatalogAdapter
     private var criterioBusqueda: String = "search"
     private val criteriosDisponibles = mapOf(
-        "LIBROS" to listOf("Todos", "Titulo", "Autor", "Editorial", "ISBN", "Genero")
+        "LIBROS" to listOf("Todos", "Titulo", "Autor", "Editorial", "ISBN", "Genero"),
+        "REVISTAS" to listOf("Todos", "Nombre", "Categoria", "ISSN")
     )
     private var searchJob: Job? = null
 
@@ -76,13 +78,14 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
 
                 val params = mutableMapOf<String, String>()
                 if (query.isNotBlank()) {
+                    Log.d(DEBUG_TAG, "Llamando a la API para $catalogType con query=$query y criterio=$criterioBusqueda. Params: $params")
                     val claveApi = if (criterioBusqueda == "Global") "search" else criterioBusqueda
                     params[claveApi.lowercase()] = query
                 }
 
                 val response = when(catalogType) {
                     "LIBROS" -> api.getLibros(params)
-                    "REVISTAS" -> api.getRevistas(query)
+                    "REVISTAS" -> api.getRevistas(params)
                     "ARTICULOS" -> api.getArticulos(query)
                     "PEDIDOS" -> api.getPedidos()
                     else -> {
@@ -92,7 +95,9 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
                 }
 
                 if (response != null && response.isSuccessful) {
+                    Log.i(DEBUG_TAG, "Respuesta exitosa de la API. Codigo: ${response.code()}")
                     response.body()?.let { items ->
+                        Log.d(DEBUG_TAG, "Items recibidos: $items, pasando ${items.size} al adapter")
                         catalogAdapter.updateItems(items)
                     }
                 } else {
