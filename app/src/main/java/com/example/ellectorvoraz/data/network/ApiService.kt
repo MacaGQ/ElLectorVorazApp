@@ -15,7 +15,6 @@ import retrofit2.http.POST
 import retrofit2.http.Body
 import retrofit2.Response
 import retrofit2.http.Path
-import retrofit2.http.Query
 import retrofit2.http.QueryMap
 
 
@@ -64,7 +63,7 @@ interface ApiService {
     // Ruta GET para obtener articulos
     // Si la query esta vacía devuelve todos los articulos
     @GET("articulos")
-    suspend fun getArticulos(@Query("search") query: String?): Response<List<Articulo_Escolar>>
+    suspend fun getArticulos(@QueryMap options: Map<String, String>): Response<List<Articulo_Escolar>>
 
     @GET("articulos/{id}")
     suspend fun getArticuloId(@Path("id") id: Int): Response<Articulo_Escolar>

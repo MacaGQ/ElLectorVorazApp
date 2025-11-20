@@ -22,7 +22,8 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
     private var criterioBusqueda: String = "search"
     private val criteriosDisponibles = mapOf(
         "LIBROS" to listOf("Todos", "Titulo", "Autor", "Editorial", "ISBN", "Genero"),
-        "REVISTAS" to listOf("Todos", "Nombre", "Categoria", "ISSN")
+        "REVISTAS" to listOf("Todos", "Nombre", "Categoria", "ISSN"),
+        "ARTICULOS" to listOf("Todos", "Nombre", "Marca", "Seccion", "Codigo")
     )
     private var searchJob: Job? = null
 
@@ -86,7 +87,7 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
                 val response = when(catalogType) {
                     "LIBROS" -> api.getLibros(params)
                     "REVISTAS" -> api.getRevistas(params)
-                    "ARTICULOS" -> api.getArticulos(query)
+                    "ARTICULOS" -> api.getArticulos(params)
                     "PEDIDOS" -> api.getPedidos()
                     else -> {
                         Log.e("API_CALL", "Catalogo desconocido: $catalogType")
