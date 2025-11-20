@@ -11,8 +11,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ellectorvoraz.adapters.FormAdapter
 import com.example.ellectorvoraz.data.FormRepository
-import com.example.ellectorvoraz.data.model.LibroRequest
 import com.example.ellectorvoraz.data.network.RetrofitClient
+import com.example.ellectorvoraz.data.repository.CreationRepository
 import kotlinx.coroutines.launch
 
 
@@ -25,6 +25,7 @@ class P12_PantallaDeRegistroReutilizable : BaseActivity() {
     private lateinit var adapter: FormAdapter
     private lateinit var formType: String
 
+    private lateinit var creationRepository: CreationRepository
     private var proveedorSeleccionadoId: Int? = null
 
     private val lanzadorSeleccion = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -42,6 +43,10 @@ class P12_PantallaDeRegistroReutilizable : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_p12_pantalla_de_registro_reutilizable)
+
+        val api = RetrofitClient.getInstance(this)
+        creationRepository = CreationRepository(api)
+
 
         // Obtener el tipo de form a crear (defaultea a registro de libro)
         // El tipo de form se define en el intent de la actividad anterior
@@ -105,100 +110,26 @@ class P12_PantallaDeRegistroReutilizable : BaseActivity() {
 
     private fun handleSubmit(formType: String, data: Map<String, String>) {
 
-        if(!validateForm(formType, data)) {
-            return
+        val extraData = mutableMapOf<String, Any?>()
+
+        if (formType == "LIBROS" || formType == "REVISTAS" || formType == "ARTICULOS") {
+            extraData["proveedorId"] = this.proveedorSeleccionadoId
         }
 
         lifecycleScope.launch {
             try {
-                val api = RetrofitClient.getInstance(this@P12_PantallaDeRegistroReutilizable)
-                var success = false
+                val response = creationRepository.createItem(formType, data, extraData)
 
-                when (formType) {
-                    "LIBROS" -> {
-                        // Guardar el libro en la BBDD (data)
-                        val libroRequest = LibroRequest(
-                            titulo = data["titulo"]!!,
-                            autor = data["autor"]!!,
-                            editorial = data["editorial"]!!,
-                            isbn = data["isbn"]!!,
-                            genero = data["genero"]!!,
-                            seccion = data["seccion"]!!,
-                            precio = data["precio"]!!.toDouble(),
-                            stock = data["stock"]!!.toInt(),
-                            proveedorId = proveedorSeleccionadoId!!
-                        )
-
-                        val response = api.createLibro(libroRequest)
-                        success = response.isSuccessful
-                    }
-                    else -> {
-                        Toast.makeText(this@P12_PantallaDeRegistroReutilizable, "Error: Guardado no definido", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                if (success) {
+                if (response.isSuccessful) {
                     Toast.makeText(this@P12_PantallaDeRegistroReutilizable, "Guardado exitoso", Toast.LENGTH_SHORT).show()
                     finish()
                 } else {
-                    Toast.makeText(this@P12_PantallaDeRegistroReutilizable, "Error: No se pudo guardar", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@P12_PantallaDeRegistroReutilizable, "Error del servidor: ${response.code()}", Toast.LENGTH_SHORT).show()
                 }
             } catch (e:Exception) {
-                Log.e("API_CALL_ERROR", "Fallo al registrar: ${e.message}", e)
-                Toast.makeText(this@P12_PantallaDeRegistroReutilizable, "Error de conexion", Toast.LENGTH_SHORT).show()
+                Log.e("FORM_SUBMIT_ERROR", "Fallo al registrar: ${e.message}", e)
+                Toast.makeText(this@P12_PantallaDeRegistroReutilizable, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
-
-
-        // Ir a la siguiente pantalla
-
-    }
-
-    private fun validateForm(formType: String, data: Map<String, String>): Boolean {
-        val requiredFields = when (formType) {
-            "LIBROS" -> listOf(
-                "titulo",
-                "autor",
-                "editorial",
-                "isbn",
-                "genero",
-                "seccion",
-                "precio",
-                "stock"
-            )
-
-            else -> emptyList()
-        }
-
-        for (key in requiredFields) {
-            if (data[key].isNullOrBlank() && key != "proveedorId") {
-                val fieldLabel = adapter.fields.find { it.key == key }?.label ?: key
-                Toast.makeText(this, "Error: $fieldLabel es requerido", Toast.LENGTH_SHORT).show()
-                return false
-            }
-        }
-
-        if (formType == "LIBROS") {
-            if (proveedorSeleccionadoId == null || proveedorSeleccionadoId == -1) {
-                Toast.makeText(this, "Error: Se debe seleccionar un proveedor", Toast.LENGTH_SHORT).show()
-                return false
-            }
-        }
-
-        if (data.containsKey("stock") && data["stock"]?.toIntOrNull() == null) {
-            Toast.makeText(this, "Error: Stock debe ser un numero", Toast.LENGTH_SHORT).show()
-            return false
-        }
-        if (data.containsKey("precio") && data["precio"]?.toDoubleOrNull() == null) {
-            Toast.makeText(this, "Error: Precio debe ser un numero", Toast.LENGTH_SHORT).show()
-            return false
-        }
-
-        if (data.containsKey("isbn") && data["isbn"]?.length != 13) {
-            Toast.makeText(this, "Error: El ISBN debe ingresarse SIN guiones y tener 13 digitos", Toast.LENGTH_SHORT).show()
-            return false
-        }
-
-        return true
     }
 }
