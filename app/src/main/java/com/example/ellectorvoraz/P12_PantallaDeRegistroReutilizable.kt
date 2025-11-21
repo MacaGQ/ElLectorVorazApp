@@ -3,7 +3,6 @@ package com.example.ellectorvoraz
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -109,7 +108,6 @@ class P12_PantallaDeRegistroReutilizable : BaseActivity() {
     }
 
     private fun handleSubmit(formType: String, data: Map<String, String>) {
-
         val extraData = mutableMapOf<String, Any?>()
 
         if (formType == "LIBROS" || formType == "REVISTAS" || formType == "ARTICULOS") {
@@ -127,7 +125,6 @@ class P12_PantallaDeRegistroReutilizable : BaseActivity() {
                     Toast.makeText(this@P12_PantallaDeRegistroReutilizable, "Error del servidor: ${response.code()}", Toast.LENGTH_SHORT).show()
                 }
             } catch (e:Exception) {
-                Log.e("FORM_SUBMIT_ERROR", "Fallo al registrar: ${e.message}", e)
                 Toast.makeText(this@P12_PantallaDeRegistroReutilizable, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }

@@ -11,6 +11,7 @@ import com.example.ellectorvoraz.data.model.Proveedor
 import com.example.ellectorvoraz.data.model.RegisterRequest
 import com.example.ellectorvoraz.data.model.RegisterResponse
 import com.example.ellectorvoraz.data.model.Revista
+import com.example.ellectorvoraz.data.model.RevistaRequest
 import com.example.ellectorvoraz.data.model.Rol
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -59,6 +60,9 @@ interface ApiService {
 
     @GET("revistas/{id}")
     suspend fun getRevistaId(@Path("id") id: Int): Response<Revista>
+
+    @POST("revistas")
+    suspend fun createRevista(@Body revistaRequest: RevistaRequest): Response<Revista>
 
 
     // ----- Articulos Escolares -----

@@ -3,6 +3,7 @@ package com.example.ellectorvoraz.data.repository
 import com.example.ellectorvoraz.data.network.ApiService
 import com.example.ellectorvoraz.data.repository.creators.BookCreator
 import com.example.ellectorvoraz.data.repository.creators.ItemCreator
+import com.example.ellectorvoraz.data.repository.creators.MagazineCreator
 import retrofit2.Response
 
 class CreationRepository (api: ApiService){
@@ -10,7 +11,8 @@ class CreationRepository (api: ApiService){
     // Item reutilizable para todos los elementos que deben registrarse
 
     private val creators: Map<String, ItemCreator> = mapOf(
-        "LIBROS" to BookCreator(api)
+        "LIBROS" to BookCreator(api),
+        "REVISTAS" to MagazineCreator(api)
     )
 
     suspend fun createItem(
