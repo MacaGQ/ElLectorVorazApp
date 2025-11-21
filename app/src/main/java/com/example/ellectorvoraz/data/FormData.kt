@@ -38,7 +38,7 @@ object FormRepository {
         return when (formType) {
             "LIBROS" -> getLibroForm()
             "REVISTAS" -> getRevistaForm()
-            /*             "ARTICULOS" -> getArticulosForm()*/
+            "ARTICULOS" -> getArticulosForm()
             else -> null
         }
     }
@@ -84,16 +84,21 @@ object FormRepository {
     )
 
     // P18 - Registro de Articulos
-    /*
     private fun getArticulosForm() = FormScreen (
         title = "REGISTRO DE ARTICULOS",
         fields = listOf(
             FormField("nombre", "Nombre"),
             FormField("marca", "Marca"),
-            FormField("descripcion", "Descripcion"),
+            FormField("precio", "Precio", FormFieldType.NUMBER_DECIMAL),
+            FormField("stock", "Stock", FormFieldType.NUMBER),
             FormField("seccion", "Seccion"),
-            FormField("precio", "Precio", InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL),
-            FormField("stock", "Stock", InputType.TYPE_CLASS_NUMBER)
+            FormField("codigo", "Código"),
+            FormField(
+                key = "proveedorId",
+                label = "Proveedor",
+                type = FormFieldType.ENTITY_SELECTOR,
+                entityType = "PROVEEDOR"
+            )
         )
-    )*/
+    )
 }

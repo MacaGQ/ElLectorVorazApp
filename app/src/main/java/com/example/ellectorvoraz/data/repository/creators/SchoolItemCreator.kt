@@ -1,45 +1,43 @@
 package com.example.ellectorvoraz.data.repository.creators
 
-import com.example.ellectorvoraz.data.model.RevistaRequest
+import com.example.ellectorvoraz.data.model.ArticuloRequest
 import com.example.ellectorvoraz.data.network.ApiService
 import retrofit2.Response
 
-class MagazineCreator (private val api: ApiService) :  ItemCreator {
+class SchoolItemCreator (private val api: ApiService) : ItemCreator {
     override suspend fun create (
         data: Map<String, String>,
         extraData: Map<String, Any?>
-    ) : Response<out Any> {
+    ): Response<out Any> {
         validate(data, extraData)
 
         val proveedorId = extraData["proveedorId"] as Int
 
-        val revistaRequest = RevistaRequest(
+        val articuloRequest = ArticuloRequest(
             nombre = data["nombre"]!!,
-            categoria = data["categoria"]!!,
-            edicion = data["edicion"]!!,
-            numero = data["numero"]!!.toInt(),
-            issn = data["issn"]!!,
+            marca = data["marca"]!!,
             precio = data["precio"]!!.toDouble(),
             stock = data["stock"]!!.toInt(),
+            seccion = data["seccion"]!!,
+            codigo = data["codigo"]!!,
             proveedorId = proveedorId
         )
 
-        return api.createRevista(revistaRequest)
+        return api.createArticulo(articuloRequest)
     }
 
     private fun validate(data: Map<String, String>, extraData: Map<String, Any?>) {
         val requiredFields = listOf(
             "nombre",
-            "categoria",
-            "edicion",
-            "numero",
-            "issn",
+            "marca",
             "precio",
-            "stock"
+            "stock",
+            "seccion",
+            "codigo"
         )
 
         for (key in requiredFields) {
-            if (data[key].isNullOrBlank() && key != "proveedorId") {
+            if (data[key].isNullOrBlank() && extraData[key] == null) {
                 throw IllegalArgumentException("El campo $key es requerido")
             }
         }
@@ -48,20 +46,14 @@ class MagazineCreator (private val api: ApiService) :  ItemCreator {
             throw IllegalArgumentException("Debe seleccionar un proveedor")
         }
 
-        if (data["numero"]?.toIntOrNull() == null) {
-            throw IllegalArgumentException("El campo 'Numero' debe ser un numero")
-        }
-
-        if (data["issn"]?.length != 9) {
-            throw IllegalArgumentException("El campo 'ISSN' debe tener 8 caracteres incluyendo el guión")
-        }
-
         if (data["precio"]?.toDoubleOrNull() == null) {
-            throw IllegalArgumentException("El campo 'Precio' debe ser un numero")
+            throw IllegalArgumentException("El campo 'Precio' debe ser un número")
         }
 
         if (data["stock"]?.toIntOrNull() == null) {
-            throw IllegalArgumentException("El campo 'Stock' debe ser un numero")
+            throw IllegalArgumentException("El campo 'Stock' debe ser un número")
         }
+
     }
+
 }

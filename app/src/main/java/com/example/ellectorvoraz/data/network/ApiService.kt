@@ -1,5 +1,6 @@
 package com.example.ellectorvoraz.data.network
 
+import com.example.ellectorvoraz.data.model.ArticuloRequest
 import com.example.ellectorvoraz.data.model.Articulo_Escolar
 import com.example.ellectorvoraz.data.model.DetallePedido
 import com.example.ellectorvoraz.data.model.Libro
@@ -74,6 +75,9 @@ interface ApiService {
 
     @GET("articulos/{id}")
     suspend fun getArticuloId(@Path("id") id: Int): Response<Articulo_Escolar>
+
+    @POST("articulos")
+    suspend fun createArticulo(@Body articuloRequest: ArticuloRequest): Response<Articulo_Escolar>
 
 
     // ----- Pedidos -----

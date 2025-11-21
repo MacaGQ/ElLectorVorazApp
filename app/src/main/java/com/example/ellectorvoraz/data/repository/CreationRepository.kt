@@ -4,6 +4,7 @@ import com.example.ellectorvoraz.data.network.ApiService
 import com.example.ellectorvoraz.data.repository.creators.BookCreator
 import com.example.ellectorvoraz.data.repository.creators.ItemCreator
 import com.example.ellectorvoraz.data.repository.creators.MagazineCreator
+import com.example.ellectorvoraz.data.repository.creators.SchoolItemCreator
 import retrofit2.Response
 
 class CreationRepository (api: ApiService){
@@ -12,7 +13,8 @@ class CreationRepository (api: ApiService){
 
     private val creators: Map<String, ItemCreator> = mapOf(
         "LIBROS" to BookCreator(api),
-        "REVISTAS" to MagazineCreator(api)
+        "REVISTAS" to MagazineCreator(api),
+        "ARTICULOS" to SchoolItemCreator(api)
     )
 
     suspend fun createItem(
