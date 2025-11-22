@@ -9,10 +9,8 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.core.content.ContextCompat
 import com.example.ellectorvoraz.data.model.RegisterRequest
@@ -21,7 +19,7 @@ import com.example.ellectorvoraz.data.network.RetrofitClient
 import kotlinx.coroutines.launch
 
 
-class P5_PantallaRegistroLibreria : AppCompatActivity() {
+class P5_PantallaRegistroLibreria : BaseActivity() {
 
     private lateinit var usernameEditText: EditText
     private lateinit var passwordEditText: EditText
@@ -34,6 +32,8 @@ class P5_PantallaRegistroLibreria : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_p5_pantalla_registro_libreria)
 
+        setupTopBar("REGISTRO")
+
         usernameEditText = findViewById(R.id.signup_input_username)
         passwordEditText = findViewById(R.id.signup_input_password)
         rolesSpinner = findViewById(R.id.signup_spn_roles)
@@ -41,13 +41,6 @@ class P5_PantallaRegistroLibreria : AppCompatActivity() {
         val btnRegistrarse = findViewById<Button>(R.id.signup_btnSignup)
         btnRegistrarse.setOnClickListener {
             handleRegistration()
-        }
-
-        val volverAtras = findViewById<ImageView>(R.id.signup_img_back)
-        volverAtras.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            this.finish()
         }
 
         val irAlLogin = findViewById<TextView>(R.id.signup_txt_login)
