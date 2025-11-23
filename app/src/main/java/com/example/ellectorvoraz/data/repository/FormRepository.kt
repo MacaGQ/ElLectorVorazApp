@@ -1,4 +1,4 @@
-package com.example.ellectorvoraz.data
+package com.example.ellectorvoraz.data.repository
 
 // Definir los tipos de campo posible
 enum class FormFieldType {
@@ -39,6 +39,7 @@ object FormRepository {
             "LIBROS" -> getLibroForm()
             "REVISTAS" -> getRevistaForm()
             "ARTICULOS" -> getArticulosForm()
+            "PROVEEDORES" -> getProveedorForm()
             else -> null
         }
     }
@@ -99,6 +100,17 @@ object FormRepository {
                 type = FormFieldType.ENTITY_SELECTOR,
                 entityType = "PROVEEDOR"
             )
+        )
+    )
+
+    private fun getProveedorForm() = FormScreen (
+        title = "REGISTRO DE PROVEEDORES",
+        fields = listOf(
+            FormField("nombre", "Nombre"),
+            FormField("telefono", "Teléfono"),
+            FormField("email", "Email"),
+            FormField("direccion", "Dirección"),
+            FormField("categoria", "Categoria")
         )
     )
 }

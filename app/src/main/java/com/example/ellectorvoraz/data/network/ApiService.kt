@@ -9,6 +9,7 @@ import com.example.ellectorvoraz.data.model.LoginRequest
 import com.example.ellectorvoraz.data.model.LoginResponse
 import com.example.ellectorvoraz.data.model.Pedido
 import com.example.ellectorvoraz.data.model.Proveedor
+import com.example.ellectorvoraz.data.model.ProveedorRequest
 import com.example.ellectorvoraz.data.model.RegisterRequest
 import com.example.ellectorvoraz.data.model.RegisterResponse
 import com.example.ellectorvoraz.data.model.Revista
@@ -95,6 +96,10 @@ interface ApiService {
     @GET("proveedores")
     suspend fun getProveedores(@QueryMap options: Map<String, String>): Response<List<Proveedor>>
 
+    @GET("proveedores/{id}")
+    suspend fun getProveedorId(@Path("id") id: Int): Response<Proveedor>
 
+    @POST("proveedores")
+    suspend fun createProveedor(@Body proveedorRequest: ProveedorRequest): Response<Proveedor>
 
 }

@@ -11,8 +11,8 @@ import android.widget.TextView
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ellectorvoraz.R
-import com.example.ellectorvoraz.data.FormField
-import com.example.ellectorvoraz.data.FormFieldType
+import com.example.ellectorvoraz.data.repository.FormField
+import com.example.ellectorvoraz.data.repository.FormFieldType
 
 class FormAdapter (
     val fields: List<FormField>,

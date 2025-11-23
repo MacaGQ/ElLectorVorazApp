@@ -9,7 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ellectorvoraz.adapters.FormAdapter
-import com.example.ellectorvoraz.data.FormRepository
+import com.example.ellectorvoraz.data.repository.FormRepository
 import com.example.ellectorvoraz.data.network.RetrofitClient
 import com.example.ellectorvoraz.data.repository.CreationRepository
 import kotlinx.coroutines.launch

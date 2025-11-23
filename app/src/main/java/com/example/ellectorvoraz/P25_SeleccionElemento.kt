@@ -12,6 +12,7 @@ import com.example.ellectorvoraz.data.model.DetalleCaracteristica
 import com.example.ellectorvoraz.data.model.DetallePedido
 import com.example.ellectorvoraz.data.model.Libro
 import com.example.ellectorvoraz.data.model.Pedido
+import com.example.ellectorvoraz.data.model.Proveedor
 import com.example.ellectorvoraz.data.model.Revista
 import com.example.ellectorvoraz.data.network.RetrofitClient
 import kotlinx.coroutines.launch
@@ -84,6 +85,7 @@ class P25_SeleccionElemento : BaseActivity() {
                         "LIBROS" -> api.getLibroId(id).body()
                         "REVISTAS" -> api.getRevistaId(id).body()
                         "ARTICULOS" -> api.getArticuloId(id).body()
+                        "PROVEEDORES" -> api.getProveedorId(id).body()
                         else -> null
                     }
 
@@ -146,6 +148,16 @@ class P25_SeleccionElemento : BaseActivity() {
                 caracteristicas.add(DetalleCaracteristica("Seccion", item.seccion))
                 caracteristicas.add(DetalleCaracteristica("Codigo", item.codigo))
 
+            }
+            is Proveedor -> {
+                // Campos principales
+                tituloTextView.text = item.nombre
+                descripcionTextView.text = item.descripcion
+
+                // Caracteristicas especificas
+                caracteristicas.add(DetalleCaracteristica("Email", item.email))
+                caracteristicas.add(DetalleCaracteristica("Telefono", item.telefono))
+                caracteristicas.add(DetalleCaracteristica("Direccion", item.direccion))
             }
             else -> {
                 Log.w("UPDATE_UI_WARN", "Se recibio un item desconocido: ${item.javaClass.simpleName}")
