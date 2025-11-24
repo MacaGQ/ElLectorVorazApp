@@ -44,6 +44,7 @@
 
     <!--Catalogos-->
     <string name="action_search">Buscar</string>
+    <string name="action_filter">Filtrar</string>
 
     <string name="welcome">"Welcome !"</string>
 

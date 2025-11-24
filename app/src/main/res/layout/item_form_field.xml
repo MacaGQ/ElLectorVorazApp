@@ -1,19 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingHorizontal="30dp"
+    android:paddingHorizontal="20dp"
     android:paddingTop="20dp">
 
     <EditText
         android:id="@+id/form_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Field Label"
-        android:textSize="16sp"
+        android:minHeight="48dp"
         android:inputType="text"
+        android:textSize="18sp"
         android:textColor="@color/form_text"
-        android:textColorHint="@color/form_text"/>
+        android:textColorHint="@color/form_text"
+        tools:hint="Field Label"/>
+
+    <LinearLayout
+        android:id="@+id/selector_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:minHeight="48dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/selector_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:textColor="@color/form_text"
+            tools:text="Proveedor"/>
+
+        <Button
+            android:id="@+id/selector_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Seleccionar" />
+
+    </LinearLayout>
 
 </LinearLayout>

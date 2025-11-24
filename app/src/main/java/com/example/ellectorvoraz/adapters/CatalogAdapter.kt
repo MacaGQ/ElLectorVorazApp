@@ -32,7 +32,6 @@ class CatalogAdapter (private val onItemClicked: (CatalogItem) -> Unit) : Recycl
         holder.itemView.setOnClickListener {
             onItemClicked(item)
         }
-
     }
 
     override fun getItemCount() = items.size

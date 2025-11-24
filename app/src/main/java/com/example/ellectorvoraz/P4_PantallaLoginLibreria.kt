@@ -4,10 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.ellectorvoraz.P7_PantallaMenuOpcionesReutilizable.Companion.EXTRA_MENU_TYPE
 import com.example.ellectorvoraz.data.model.LoginRequest
@@ -16,22 +14,20 @@ import kotlinx.coroutines.launch
 import androidx.core.content.edit
 
 
-class P4_PantallaLoginLibreria : AppCompatActivity() {
+class P4_PantallaLoginLibreria : BaseActivity() {
 
     private lateinit var usernameEditText: EditText
     private lateinit var passwordEditText: EditText
 
-    override fun onCreate(saveInstanceState: Bundle?) {
-        super.onCreate(saveInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_p4_pantalla_login_libreria)
+
+        // Inicializacion de la barra superior
+        setupTopBar("Iniciar Sesión")
 
         usernameEditText = findViewById(R.id.login_input_username)
         passwordEditText = findViewById(R.id.login_input_password)
-
-        val flechaVolver = findViewById<ImageView>(R.id.login_img_back)
-        flechaVolver.setOnClickListener {
-            finish()
-        }
 
         val btnIngresar = findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.login_btnLogin)
         btnIngresar.setOnClickListener {

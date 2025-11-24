@@ -4,17 +4,44 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import com.example.ellectorvoraz.adapters.CatalogAdapter
 import com.example.ellectorvoraz.data.network.RetrofitClient
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class P21_PantallaCatalogoReutilizable : BaseActivity() {
     companion object {
+        // Tipo de catalogo que se va a cargar
         const val EXTRA_CATALOG_TYPE = "EXTRA_CATALOG_TYPE"
+
+        // Modo de operación:
+        // Modo Navegacion - Funciona como catalogo normal, al hacer click muestra los detalles
+        // Modo Seleccion - Funciona como selector (de proveedores) para los formularios de registro
+        const val EXTRA_OPERATION_MODE = "EXTRA_OPERATION_MODE"
+        const val MODE_NAVIGATION = "MODE_NAVIGATION"
+        const val MODE_SELECTION = "MODE_SELECTION"
+
+        // Se guardan el ID y Nombre del proveedor para mandar al formulario de registro
+        const val RESULT_SELECTED_ID = "RESULT_SELECTED_ID"
+        const val RESULT_SELECTED_NAME = "RESULT_SELECTED_NAME"
     }
 
     private lateinit var catalogAdapter: CatalogAdapter
+    private var operationMode: String = MODE_NAVIGATION
+    private var criterioBusqueda: String = "search"
+    private val criteriosDisponibles = mapOf(
+        "LIBROS" to listOf("Todos", "Titulo", "Autor", "Editorial", "ISBN", "Genero"),
+        "REVISTAS" to listOf("Todos", "Nombre", "Categoria", "ISSN"),
+        "ARTICULOS" to listOf("Todos", "Nombre", "Marca", "Seccion", "Codigo"),
+        "PEDIDOS" to listOf("Todos", "Estado", "Proveedor", "Tipo de Producto" ,"Categoria"),
+        "PROVEEDORES" to listOf("Todos", "Nombre", "Categoria")
+    )
+    private var searchJob: Job? = null
+
+    private lateinit var searchView: androidx.appcompat.widget.SearchView
 
     // Defaultea a catalogo de libros
     private var catalogType: String = "LIBROS"
@@ -25,6 +52,8 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
 
         // Datos recibidos del intent en la pantalla anterior
         catalogType = intent.getStringExtra(EXTRA_CATALOG_TYPE) ?: "LIBROS"
+        operationMode = intent.getStringExtra(EXTRA_OPERATION_MODE) ?: MODE_NAVIGATION
+
 
         // Definicion del titulo de la pantalla
         val catalogTitle = when(catalogType) {
@@ -32,6 +61,7 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
             "REVISTAS" -> "CATÁLOGO DE REVISTAS"
             "ARTICULOS" -> "CATÁLOGO DE ARTÍCULOS"
             "PEDIDOS" -> "LISTADO DE PEDIDOS"
+            "PROVEEDORES" -> "LISTADO DE PROVEEDORES"
             else -> "CATÁLOGO"
         }
 
@@ -43,10 +73,21 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
 
 
         catalogAdapter = CatalogAdapter { clickedItem ->
-            val intent = Intent(this, P25_SeleccionElemento::class.java)
-            intent.putExtra("EXTRA_ITEM_ID", clickedItem.id)
-            intent.putExtra("EXTRA_CATALOG_TYPE", catalogType)
-            startActivity(intent)
+            when (operationMode) {
+                MODE_NAVIGATION -> {
+                    val intent = Intent(this, P25_SeleccionElemento::class.java)
+                    intent.putExtra("EXTRA_ITEM_ID", clickedItem.id)
+                    intent.putExtra("EXTRA_CATALOG_TYPE", catalogType)
+                    startActivity(intent)
+                }
+                MODE_SELECTION -> {
+                    val resultIntent = Intent()
+                    resultIntent.putExtra(RESULT_SELECTED_ID, clickedItem.id)
+                    resultIntent.putExtra(RESULT_SELECTED_NAME, clickedItem.nombre)
+                    setResult(RESULT_OK, resultIntent)
+                    finish()
+                }
+            }
         }
 
         recyclerView.adapter = catalogAdapter
@@ -57,18 +98,30 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
 
     // Busca los datos en la BBDD y los muestra
     // Si la query esta vacia, muestra todos los datos
-    // Si la query no esta vacia, muestra los datos que coincidan con la query
+    // Si la query no esta vacia, muestra los datos que coincidan con la query (global o por filtros)
     // El catalogo se arma en CatalogAdapter
     private fun performSearch(query:String) {
         lifecycleScope.launch {
             try {
                 val api = RetrofitClient.getInstance(this@P21_PantallaCatalogoReutilizable)
 
+                val params = mutableMapOf<String, String>()
+                if (query.isNotBlank()) {
+                    val claveApi = when (criterioBusqueda) {
+                        "Todos" -> "search"
+                        "Proveedor" -> "nombre_proveedor"
+                        "Tipo de Producto" -> "tipo_producto"
+                        else -> criterioBusqueda.lowercase()
+                    }
+                    params[claveApi.lowercase()] = query
+                }
+
                 val response = when(catalogType) {
-                    "LIBROS" -> api.getLibros(query)
-                    "REVISTAS" -> api.getRevistas(query)
-                    "ARTICULOS" -> api.getArticulos(query)
-                    "PEDIDOS" -> api.getPedidos()
+                    "LIBROS" -> api.getLibros(params)
+                    "REVISTAS" -> api.getRevistas(params)
+                    "ARTICULOS" -> api.getArticulos(params)
+                    "PEDIDOS" -> api.getPedidos(params)
+                    "PROVEEDORES" -> api.getProveedores(params)
                     else -> {
                         Log.e("API_CALL", "Catalogo desconocido: $catalogType")
                         null
@@ -95,21 +148,63 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
         menuInflater.inflate(R.menu.catalogo_menu, menu)
 
         val searchItem = menu.findItem(R.id.action_search)
-        val searchView = searchItem.actionView as androidx.appcompat.widget.SearchView
+        searchView = searchItem.actionView as androidx.appcompat.widget.SearchView
 
         searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                Toast.makeText(this@P21_PantallaCatalogoReutilizable, "Buscando: $query", Toast.LENGTH_SHORT).show()
+                searchJob?.cancel()
                 performSearch(query ?: "")
                 searchView.clearFocus()
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                searchJob?.cancel()
+                searchJob = lifecycleScope.launch {
+                    delay(500L)
+                    performSearch(newText ?: "")
+                }
                 return true
             }
         })
 
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_filter -> {
+                showFilterDialog()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun showFilterDialog() {
+        val filtros = criteriosDisponibles[catalogType] ?: return
+        val checkedItem = filtros.indexOf(criterioBusqueda).let { if (it == -1) 0 else it}
+
+        AlertDialog.Builder(this)
+            .setTitle("Seleccionar Criterio")
+            .setSingleChoiceItems(filtros.toTypedArray(), checkedItem) { dialog, which ->
+                criterioBusqueda = filtros[which]
+                Toast.makeText(
+                    this,
+                    "Criterio de busqueda cambiado a $criterioBusqueda",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                updateSearchHint()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun updateSearchHint() {
+        if (::searchView.isInitialized) {
+            searchView.queryHint = "Buscar por: $criterioBusqueda"
+        }
     }
 }
