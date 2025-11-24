@@ -1,5 +1,6 @@
 package com.example.ellectorvoraz
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -8,6 +9,8 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ellectorvoraz.adapters.MenuButtonAdapter
 import com.example.ellectorvoraz.data.MenuRepository
+import com.example.ellectorvoraz.data.network.RetrofitClient
+import com.example.ellectorvoraz.util.SharedPreferencesManager
 
 class P7_PantallaMenuOpcionesReutilizable : BaseActivity() {
 
@@ -49,7 +52,7 @@ class P7_PantallaMenuOpcionesReutilizable : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_logout -> {
-            performLogout()
+            showLogoutConfirmationDialog()
             true
             }
             else -> super.onOptionsItemSelected(item)
@@ -57,21 +60,26 @@ class P7_PantallaMenuOpcionesReutilizable : BaseActivity() {
     }
 
     // Cerrar Sesión
+
+    private fun showLogoutConfirmationDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Cerrar Sesión")
+            .setMessage("¿Está seguro de que quiere cerrar la sesión?")
+            .setPositiveButton("Sí") { _, _ ->
+                performLogout()
+            }
+            .setNegativeButton("No", null)
+            .show()
+    }
+
     private fun performLogout() {
-        clearAuthToken()
-        goToLoginActivity()
-    }
 
-    private fun clearAuthToken() {
-        val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
-        sharedPreferences.edit().remove("AUTH_TOKEN").apply()
-    }
-
-    private fun goToLoginActivity() {
-        val intent = Intent(this, P4_PantallaLoginLibreria::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        SharedPreferencesManager.clearSession(this)
+        RetrofitClient.clearInstance()
+        val intent = Intent(this, P4_PantallaLoginLibreria::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
         startActivity(intent)
         finish()
     }
-
 }
