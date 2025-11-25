@@ -74,6 +74,9 @@ interface ApiService {
     @POST("revistas")
     suspend fun createRevista(@Body revistaRequest: RevistaRequest): Response<Revista>
 
+    @DELETE("revistas/{id}")
+    suspend fun deleteRevista(@Path("id") id: Int): Response<Unit>
+
 
     // ----- Articulos Escolares -----
 

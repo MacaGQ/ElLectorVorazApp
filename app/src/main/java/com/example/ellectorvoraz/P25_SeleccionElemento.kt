@@ -288,7 +288,7 @@ class P25_SeleccionElemento : BaseActivity() {
             if (success) {
                 Toast.makeText(
                     this@P25_SeleccionElemento,
-                    "Libro eliminado exitosamente",
+                    "Eliminado exitosamente",
                     Toast.LENGTH_SHORT
                 ).show()
 
@@ -299,7 +299,7 @@ class P25_SeleccionElemento : BaseActivity() {
             } else {
                 Toast.makeText(
                     this@P25_SeleccionElemento,
-                    "Error al eliminar el libro",
+                    "Error al eliminar",
                     Toast.LENGTH_SHORT
                 ).show()
             }

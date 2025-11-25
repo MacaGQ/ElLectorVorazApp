@@ -9,6 +9,7 @@ class DeletionRepository (private val api: ApiService) {
         return try {
             val response = when (itemType) {
                 "LIBROS" -> api.deleteLibro(itemId)
+                "REVISTAS" -> api.deleteRevista(itemId)
                 else -> null
             }
             response?.isSuccessful ?: false
