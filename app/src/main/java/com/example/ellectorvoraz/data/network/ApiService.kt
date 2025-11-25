@@ -91,6 +91,9 @@ interface ApiService {
     @POST("articulos")
     suspend fun createArticulo(@Body articuloRequest: ArticuloRequest): Response<Articulo_Escolar>
 
+    @DELETE("articulos/{id}")
+    suspend fun deleteArticulo(@Path("id") id: Int): Response<Unit>
+
 
     // ----- Pedidos -----
     @GET("pedidos")
