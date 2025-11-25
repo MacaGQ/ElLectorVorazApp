@@ -10,10 +10,12 @@ import com.example.ellectorvoraz.adapters.DetalleAdapter
 import com.example.ellectorvoraz.data.model.Articulo_Escolar
 import com.example.ellectorvoraz.data.model.DetalleCaracteristica
 import com.example.ellectorvoraz.data.model.DetallePedido
+import com.example.ellectorvoraz.data.model.DetalleVenta
 import com.example.ellectorvoraz.data.model.Libro
 import com.example.ellectorvoraz.data.model.Pedido
 import com.example.ellectorvoraz.data.model.Proveedor
 import com.example.ellectorvoraz.data.model.Revista
+import com.example.ellectorvoraz.data.model.Venta
 import com.example.ellectorvoraz.data.network.RetrofitClient
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.async
@@ -79,6 +81,26 @@ class P25_SeleccionElemento : BaseActivity() {
                             "Error al obtener detalles del pedido",
                             Toast.LENGTH_SHORT
                         ).show()
+                    }
+                } else if (type == "VENTAS") {
+                    val ventaDeferred = async { api.getVentaId(id) }
+                    val detallesDeferred = async { api.getDetalleVenta(id) }
+
+                    val ventaResponse = ventaDeferred.await()
+                    val detallesResponse = detallesDeferred.await()
+
+                    if (ventaResponse.isSuccessful && detallesResponse.isSuccessful) {
+                        val venta = ventaResponse.body()
+                        val detalles = detallesResponse.body()
+
+                        if (venta != null && detalles != null) {
+                            updateUiPorVenta(venta, detalles)
+                        } else {
+                            Toast.makeText(this@P25_SeleccionElemento, "No se encontraron datos para la venta", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Log.e("VENTA_DETALLE_ERRROR", "Error al obtener detalles de la venta: ${ventaResponse.code()} - ${ventaResponse.message()}")
+                        Toast.makeText(this@P25_SeleccionElemento, "Error al obtener detalles de la venta", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     val item: Any? = when (type) {
@@ -183,5 +205,27 @@ class P25_SeleccionElemento : BaseActivity() {
 
         detalleRecyclerView.adapter = DetalleAdapter(caracteristicas)
 
+    }
+
+    private fun updateUiPorVenta(venta: Venta, detalles: List<DetalleVenta>) {
+        setupTopBar("Detalle de Venta")
+        tituloTextView.text = "Detalle de Venta N° ${venta.id}"
+        descripcionTextView.text = venta.descripcion
+
+        val caracteristicas = mutableListOf<DetalleCaracteristica>()
+
+        detalles.forEach { detalle ->
+            val precioUnitarioFmt = String.format("%.2f", detalle.precioUnitario)
+            val subtotalFmt = String.format("%.2f", detalle.subtotal)
+
+            caracteristicas.add(
+                DetalleCaracteristica(
+                    etiqueta = detalle.nombreProducto,
+                    valor = "${detalle.cantidad} un. x $${precioUnitarioFmt} c/u | Subtotal: $${subtotalFmt}"
+                )
+            )
+        }
+
+        detalleRecyclerView.adapter = DetalleAdapter(caracteristicas)
     }
 }

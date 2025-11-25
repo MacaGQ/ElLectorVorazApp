@@ -5,6 +5,7 @@ import android.content.Intent
 import com.example.ellectorvoraz.P12_PantallaDeRegistroReutilizable
 import com.example.ellectorvoraz.P21_PantallaCatalogoReutilizable
 import com.example.ellectorvoraz.P7_PantallaMenuOpcionesReutilizable
+import com.example.ellectorvoraz.P82_PantallaTrasnsaccionesReutilizable
 
 // Crear boton: texto e intent
 data class MenuButton (
@@ -86,12 +87,25 @@ object MenuRepository {
             MenuButton(
                 text = "Registro",
                 createIntentAction = {
-                    if (contextType != null) {
-                        val intent = Intent(context, P12_PantallaDeRegistroReutilizable::class.java)
-                        intent.putExtra(P12_PantallaDeRegistroReutilizable.EXTRA_FORM_TYPE, contextType)
-                        intent
-                    } else {
-                        Intent()
+                    when (contextType) {
+                        "VENTAS" -> {
+                            val intent = Intent(context, P82_PantallaTrasnsaccionesReutilizable::class.java)
+                            intent.putExtra(P82_PantallaTrasnsaccionesReutilizable.EXTRA_TRANSACTION_TYPE, P82_PantallaTrasnsaccionesReutilizable.TYPE_VENTA)
+                            intent
+                        }
+                        "PEDIDOS" -> {
+                            val intent = Intent(context, P82_PantallaTrasnsaccionesReutilizable::class.java)
+                            intent.putExtra(P82_PantallaTrasnsaccionesReutilizable.EXTRA_TRANSACTION_TYPE, P82_PantallaTrasnsaccionesReutilizable.TYPE_PEDIDO)
+                            intent
+                        }
+                        else ->
+                            if (contextType != null) {
+                                val intent = Intent(context, P12_PantallaDeRegistroReutilizable::class.java)
+                                intent.putExtra(P12_PantallaDeRegistroReutilizable.EXTRA_FORM_TYPE, contextType)
+                                intent
+                            } else {
+                                Intent()
+                            }
                     }
                 }
             ),
@@ -127,7 +141,7 @@ object MenuRepository {
             ),
             MenuButton(
                 text = "Ventas",
-                createIntentAction = { createMenuIntent(context, "LIBRERIA_GESTION_VENTAS") }
+                createIntentAction = { createParticularMenuIntent(context, "VENTAS") }
             ),
             MenuButton(
                 text = "Proveedores",

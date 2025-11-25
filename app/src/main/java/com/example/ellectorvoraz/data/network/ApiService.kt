@@ -3,6 +3,7 @@ package com.example.ellectorvoraz.data.network
 import com.example.ellectorvoraz.data.model.ArticuloRequest
 import com.example.ellectorvoraz.data.model.Articulo_Escolar
 import com.example.ellectorvoraz.data.model.DetallePedido
+import com.example.ellectorvoraz.data.model.DetalleVenta
 import com.example.ellectorvoraz.data.model.Libro
 import com.example.ellectorvoraz.data.model.LibroRequest
 import com.example.ellectorvoraz.data.model.LoginRequest
@@ -16,6 +17,7 @@ import com.example.ellectorvoraz.data.model.RegisterResponse
 import com.example.ellectorvoraz.data.model.Revista
 import com.example.ellectorvoraz.data.model.RevistaRequest
 import com.example.ellectorvoraz.data.model.Rol
+import com.example.ellectorvoraz.data.model.Venta
 import com.example.ellectorvoraz.data.model.VentaRequest
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -108,6 +110,15 @@ interface ApiService {
 
 
     // ----- Ventas -----
+
+    @GET("ventas")
+    suspend fun getVentas(@QueryMap options: Map<String, String>): Response<List<Venta>>
+
+    @GET("ventas/{id}")
+    suspend fun getVentaId(@Path("id") id: Int): Response<Venta>
+
+    @GET("ventas/{id}/detalles")
+    suspend fun getDetalleVenta(@Path("id") id: Int): Response<List<DetalleVenta>>
 
     @POST("ventas")
     suspend fun createVenta(@Body ventaRequest: VentaRequest): Response<Any>

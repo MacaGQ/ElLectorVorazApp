@@ -4,8 +4,10 @@ import com.example.ellectorvoraz.data.network.ApiService
 import com.example.ellectorvoraz.data.repository.creators.BookCreator
 import com.example.ellectorvoraz.data.repository.creators.ItemCreator
 import com.example.ellectorvoraz.data.repository.creators.MagazineCreator
+import com.example.ellectorvoraz.data.repository.creators.PedidoCreator
 import com.example.ellectorvoraz.data.repository.creators.ProveedorCreator
 import com.example.ellectorvoraz.data.repository.creators.SchoolItemCreator
+import com.example.ellectorvoraz.data.repository.creators.VentaCreator
 import retrofit2.Response
 
 class CreationRepository (api: ApiService){
@@ -16,7 +18,9 @@ class CreationRepository (api: ApiService){
         "LIBROS" to BookCreator(api),
         "REVISTAS" to MagazineCreator(api),
         "ARTICULOS" to SchoolItemCreator(api),
-        "PROVEEDORES" to ProveedorCreator(api)
+        "PROVEEDORES" to ProveedorCreator(api),
+        "PEDIDO" to PedidoCreator(api),
+        "VENTA" to VentaCreator(api)
     )
 
     suspend fun createItem(

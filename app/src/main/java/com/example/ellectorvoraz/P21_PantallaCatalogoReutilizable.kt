@@ -1,5 +1,6 @@
 package com.example.ellectorvoraz
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +8,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import com.example.ellectorvoraz.adapters.CatalogAdapter
+import com.example.ellectorvoraz.data.model.Articulo_Escolar
+import com.example.ellectorvoraz.data.model.Libro
+import com.example.ellectorvoraz.data.model.Revista
 import com.example.ellectorvoraz.data.network.RetrofitClient
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Job
@@ -27,6 +31,10 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
         // Se guardan el ID y Nombre del proveedor para mandar al formulario de registro
         const val RESULT_SELECTED_ID = "RESULT_SELECTED_ID"
         const val RESULT_SELECTED_NAME = "RESULT_SELECTED_NAME"
+
+        // Se guardan el tupo de producto y el precio para las transacciones
+        const val RESULT_PRODUCT_TYPE = "RESULT_PRODUCT_TYPE"
+        const val RESULT_PRODUCT_PRICE = "RESULT_PRODUCT_PRICE"
     }
 
     private lateinit var catalogAdapter: CatalogAdapter
@@ -62,6 +70,7 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
             "ARTICULOS" -> "CATÁLOGO DE ARTÍCULOS"
             "PEDIDOS" -> "LISTADO DE PEDIDOS"
             "PROVEEDORES" -> "LISTADO DE PROVEEDORES"
+            "VENTAS" -> "LISTADO DE VENTAS"
             else -> "CATÁLOGO"
         }
 
@@ -84,7 +93,23 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
                     val resultIntent = Intent()
                     resultIntent.putExtra(RESULT_SELECTED_ID, clickedItem.id)
                     resultIntent.putExtra(RESULT_SELECTED_NAME, clickedItem.nombre)
-                    setResult(RESULT_OK, resultIntent)
+
+                    when (clickedItem) {
+                        is Libro -> {
+                            resultIntent.putExtra(RESULT_PRODUCT_TYPE, "libro")
+                            resultIntent.putExtra(RESULT_PRODUCT_PRICE, clickedItem.precio)
+                        }
+                        is Revista -> {
+                            resultIntent.putExtra(RESULT_PRODUCT_TYPE, "revista")
+                            resultIntent.putExtra(RESULT_PRODUCT_PRICE, clickedItem.precio)
+                        }
+                        is Articulo_Escolar -> {
+                            resultIntent.putExtra(RESULT_PRODUCT_TYPE, "articulo_escolar")
+                            resultIntent.putExtra(RESULT_PRODUCT_PRICE, clickedItem.precio)
+                        }
+                    }
+
+                    setResult(Activity.RESULT_OK, resultIntent)
                     finish()
                 }
             }
@@ -122,6 +147,7 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
                     "ARTICULOS" -> api.getArticulos(params)
                     "PEDIDOS" -> api.getPedidos(params)
                     "PROVEEDORES" -> api.getProveedores(params)
+                    "VENTAS" -> api.getVentas(params)
                     else -> {
                         Log.e("API_CALL", "Catalogo desconocido: $catalogType")
                         null
