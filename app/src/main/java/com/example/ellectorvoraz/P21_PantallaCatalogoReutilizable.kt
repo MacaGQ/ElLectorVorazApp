@@ -1,5 +1,7 @@
 package com.example.ellectorvoraz
 
+import android.app.Activity
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,10 +9,16 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import com.example.ellectorvoraz.adapters.CatalogAdapter
+import com.example.ellectorvoraz.data.model.Articulo_Escolar
+import com.example.ellectorvoraz.data.model.Libro
+import com.example.ellectorvoraz.data.model.Revista
 import com.example.ellectorvoraz.data.network.RetrofitClient
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class P21_PantallaCatalogoReutilizable : BaseActivity() {
     companion object {
@@ -27,6 +35,10 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
         // Se guardan el ID y Nombre del proveedor para mandar al formulario de registro
         const val RESULT_SELECTED_ID = "RESULT_SELECTED_ID"
         const val RESULT_SELECTED_NAME = "RESULT_SELECTED_NAME"
+
+        // Se guardan el tupo de producto y el precio para las transacciones
+        const val RESULT_PRODUCT_TYPE = "RESULT_PRODUCT_TYPE"
+        const val RESULT_PRODUCT_PRICE = "RESULT_PRODUCT_PRICE"
     }
 
     private lateinit var catalogAdapter: CatalogAdapter
@@ -36,8 +48,9 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
         "LIBROS" to listOf("Todos", "Titulo", "Autor", "Editorial", "ISBN", "Genero"),
         "REVISTAS" to listOf("Todos", "Nombre", "Categoria", "ISSN"),
         "ARTICULOS" to listOf("Todos", "Nombre", "Marca", "Seccion", "Codigo"),
-        "PEDIDOS" to listOf("Todos", "Estado", "Proveedor", "Tipo de Producto" ,"Categoria"),
-        "PROVEEDORES" to listOf("Todos", "Nombre", "Categoria")
+        "PEDIDOS" to listOf("Todos", "Estado", "Proveedor", "Tipo de Producto", "Categoria"),
+        "PROVEEDORES" to listOf("Todos", "Nombre", "Categoria"),
+        "VENTAS" to listOf("Todos", "Fecha", "Tipo de Producto", "Categoría")
     )
     private var searchJob: Job? = null
 
@@ -56,12 +69,13 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
 
 
         // Definicion del titulo de la pantalla
-        val catalogTitle = when(catalogType) {
+        val catalogTitle = when (catalogType) {
             "LIBROS" -> "CATÁLOGO DE LIBROS"
             "REVISTAS" -> "CATÁLOGO DE REVISTAS"
             "ARTICULOS" -> "CATÁLOGO DE ARTÍCULOS"
             "PEDIDOS" -> "LISTADO DE PEDIDOS"
             "PROVEEDORES" -> "LISTADO DE PROVEEDORES"
+            "VENTAS" -> "LISTADO DE VENTAS"
             else -> "CATÁLOGO"
         }
 
@@ -69,7 +83,8 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
         setupTopBar(catalogTitle)
 
         // Carga de los datos anteriores en la UI
-        val recyclerView = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.catalog_recycler_view)
+        val recyclerView =
+            findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.catalog_recycler_view)
 
 
         catalogAdapter = CatalogAdapter { clickedItem ->
@@ -80,11 +95,30 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
                     intent.putExtra("EXTRA_CATALOG_TYPE", catalogType)
                     startActivity(intent)
                 }
+
                 MODE_SELECTION -> {
                     val resultIntent = Intent()
                     resultIntent.putExtra(RESULT_SELECTED_ID, clickedItem.id)
                     resultIntent.putExtra(RESULT_SELECTED_NAME, clickedItem.nombre)
-                    setResult(RESULT_OK, resultIntent)
+
+                    when (clickedItem) {
+                        is Libro -> {
+                            resultIntent.putExtra(RESULT_PRODUCT_TYPE, "libro")
+                            resultIntent.putExtra(RESULT_PRODUCT_PRICE, clickedItem.precio)
+                        }
+
+                        is Revista -> {
+                            resultIntent.putExtra(RESULT_PRODUCT_TYPE, "revista")
+                            resultIntent.putExtra(RESULT_PRODUCT_PRICE, clickedItem.precio)
+                        }
+
+                        is Articulo_Escolar -> {
+                            resultIntent.putExtra(RESULT_PRODUCT_TYPE, "articulo_escolar")
+                            resultIntent.putExtra(RESULT_PRODUCT_PRICE, clickedItem.precio)
+                        }
+                    }
+
+                    setResult(Activity.RESULT_OK, resultIntent)
                     finish()
                 }
             }
@@ -100,7 +134,7 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
     // Si la query esta vacia, muestra todos los datos
     // Si la query no esta vacia, muestra los datos que coincidan con la query (global o por filtros)
     // El catalogo se arma en CatalogAdapter
-    private fun performSearch(query:String) {
+    private fun performSearch(query: String) {
         lifecycleScope.launch {
             try {
                 val api = RetrofitClient.getInstance(this@P21_PantallaCatalogoReutilizable)
@@ -111,17 +145,20 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
                         "Todos" -> "search"
                         "Proveedor" -> "nombre_proveedor"
                         "Tipo de Producto" -> "tipo_producto"
+                        "Fecha" -> "fecha"
+                        "Categoría" -> "categoria"
                         else -> criterioBusqueda.lowercase()
                     }
                     params[claveApi.lowercase()] = query
                 }
 
-                val response = when(catalogType) {
+                val response = when (catalogType) {
                     "LIBROS" -> api.getLibros(params)
                     "REVISTAS" -> api.getRevistas(params)
                     "ARTICULOS" -> api.getArticulos(params)
                     "PEDIDOS" -> api.getPedidos(params)
                     "PROVEEDORES" -> api.getProveedores(params)
+                    "VENTAS" -> api.getVentas(params)
                     else -> {
                         Log.e("API_CALL", "Catalogo desconocido: $catalogType")
                         null
@@ -133,12 +170,23 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
                         catalogAdapter.updateItems(items)
                     }
                 } else {
-                    Log.e("API_CALL", "Error en la llamada a la API: ${response?.code()} - ${response?.message()}")
-                    Toast.makeText(this@P21_PantallaCatalogoReutilizable, "Error al cargar los datos", Toast.LENGTH_SHORT).show()
+                    Log.e(
+                        "API_CALL",
+                        "Error en la llamada a la API: ${response?.code()} - ${response?.message()}"
+                    )
+                    Toast.makeText(
+                        this@P21_PantallaCatalogoReutilizable,
+                        "Error al cargar los datos",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             } catch (e: Exception) {
                 Log.e("API_CALL", "Exception: ${e.message}")
-                Toast.makeText(this@P21_PantallaCatalogoReutilizable, "Error de conexion", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@P21_PantallaCatalogoReutilizable,
+                    "Error de conexion",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -150,7 +198,8 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
         val searchItem = menu.findItem(R.id.action_search)
         searchView = searchItem.actionView as androidx.appcompat.widget.SearchView
 
-        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+        searchView.setOnQueryTextListener(object :
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 searchJob?.cancel()
                 performSearch(query ?: "")
@@ -159,15 +208,18 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                searchJob?.cancel()
-                searchJob = lifecycleScope.launch {
-                    delay(500L)
-                    performSearch(newText ?: "")
+                if (criterioBusqueda != "Fecha") {
+                    searchJob?.cancel()
+                    searchJob = lifecycleScope.launch {
+                        delay(500L)
+                        performSearch(newText ?: "")
+                    }
                 }
                 return true
             }
         })
 
+        updateSearchUI()
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -177,13 +229,22 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
                 showFilterDialog()
                 true
             }
+
+            R.id.action_search -> {
+                if (criterioBusqueda == "Fecha") {
+                    showDatePickerDialog()
+                    return true
+                }
+                return super.onOptionsItemSelected(item)
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
 
     private fun showFilterDialog() {
         val filtros = criteriosDisponibles[catalogType] ?: return
-        val checkedItem = filtros.indexOf(criterioBusqueda).let { if (it == -1) 0 else it}
+        val checkedItem = filtros.indexOf(criterioBusqueda).let { if (it == -1) 0 else it }
 
         AlertDialog.Builder(this)
             .setTitle("Seleccionar Criterio")
@@ -195,16 +256,44 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
 
-                updateSearchHint()
+                updateSearchUI()
+
+                if (criterioBusqueda == "Fecha" && ::searchView.isInitialized) {
+                    searchView.onActionViewCollapsed()
+                    searchView.setQuery("", false)
+                }
+
                 dialog.dismiss()
             }
             .setNegativeButton("Cancelar", null)
             .show()
     }
 
-    private fun updateSearchHint() {
-        if (::searchView.isInitialized) {
-            searchView.queryHint = "Buscar por: $criterioBusqueda"
+    private fun showDatePickerDialog() {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
+            val selectedDate = Calendar.getInstance()
+            selectedDate.set(selectedYear, selectedMonth, selectedDay)
+            val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val formattedDate = format.format(selectedDate.time)
+
+            searchView.setQuery(formattedDate, true)
+        }, year, month, day).show()
+    }
+
+    private fun updateSearchUI() {
+        if (!::searchView.isInitialized) return
+
+        val hint = when (criterioBusqueda) {
+            "Fecha" -> "Elegir fecha"
+            "Todos" -> "Buscar en todo el catálogo"
+            else -> "Buscar por: $criterioBusqueda"
         }
+
+        searchView.queryHint = hint
     }
 }

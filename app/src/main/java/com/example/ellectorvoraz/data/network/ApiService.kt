@@ -3,11 +3,13 @@ package com.example.ellectorvoraz.data.network
 import com.example.ellectorvoraz.data.model.ArticuloRequest
 import com.example.ellectorvoraz.data.model.Articulo_Escolar
 import com.example.ellectorvoraz.data.model.DetallePedido
+import com.example.ellectorvoraz.data.model.DetalleVenta
 import com.example.ellectorvoraz.data.model.Libro
 import com.example.ellectorvoraz.data.model.LibroRequest
 import com.example.ellectorvoraz.data.model.LoginRequest
 import com.example.ellectorvoraz.data.model.LoginResponse
 import com.example.ellectorvoraz.data.model.Pedido
+import com.example.ellectorvoraz.data.model.PedidoRequest
 import com.example.ellectorvoraz.data.model.Proveedor
 import com.example.ellectorvoraz.data.model.ProveedorRequest
 import com.example.ellectorvoraz.data.model.RegisterRequest
@@ -15,6 +17,8 @@ import com.example.ellectorvoraz.data.model.RegisterResponse
 import com.example.ellectorvoraz.data.model.Revista
 import com.example.ellectorvoraz.data.model.RevistaRequest
 import com.example.ellectorvoraz.data.model.Rol
+import com.example.ellectorvoraz.data.model.Venta
+import com.example.ellectorvoraz.data.model.VentaRequest
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Body
@@ -91,6 +95,8 @@ interface ApiService {
     @GET("pedidos/{id}/detalles")
     suspend fun getDetallePedido(@Path("id") id: Int): Response<List<DetallePedido>>
 
+    @POST("pedidos")
+    suspend fun createPedido(@Body pedidoRequest: PedidoRequest): Response<Any>
 
     // ----- Proveedores -----
     @GET("proveedores")
@@ -101,5 +107,20 @@ interface ApiService {
 
     @POST("proveedores")
     suspend fun createProveedor(@Body proveedorRequest: ProveedorRequest): Response<Proveedor>
+
+
+    // ----- Ventas -----
+
+    @GET("ventas")
+    suspend fun getVentas(@QueryMap options: Map<String, String>): Response<List<Venta>>
+
+    @GET("ventas/{id}")
+    suspend fun getVentaId(@Path("id") id: Int): Response<Venta>
+
+    @GET("ventas/{id}/detalles")
+    suspend fun getDetalleVenta(@Path("id") id: Int): Response<List<DetalleVenta>>
+
+    @POST("ventas")
+    suspend fun createVenta(@Body ventaRequest: VentaRequest): Response<Any>
 
 }

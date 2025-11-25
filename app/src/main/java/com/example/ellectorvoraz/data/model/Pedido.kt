@@ -28,8 +28,8 @@ data class Pedido (
     override val descripcion: String
         get() {
             val formatoFecha = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-            val fechaFormateada = fecha?.let { formatoFecha.format(it) } ?: "Fecha no disponible"
+            val fechaFormateada = fecha.let { formatoFecha.format(it) } ?: "Fecha no disponible"
 
-            return "Proveedor: $nombreProveedor \nFecha: $fechaFormateada \nEstado: ${estado?.uppercase()}"
+            return "Proveedor: $nombreProveedor \nFecha: $fechaFormateada \nEstado: ${estado.uppercase()}"
         }
 }

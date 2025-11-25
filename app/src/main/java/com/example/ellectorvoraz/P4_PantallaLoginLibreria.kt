@@ -7,11 +7,11 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
-import com.example.ellectorvoraz.P7_PantallaMenuOpcionesReutilizable.Companion.EXTRA_MENU_TYPE
 import com.example.ellectorvoraz.data.model.LoginRequest
 import com.example.ellectorvoraz.data.network.RetrofitClient
+import com.example.ellectorvoraz.P7_PantallaMenuOpcionesReutilizable.Companion.EXTRA_MENU_TYPE
+import com.example.ellectorvoraz.util.SharedPreferencesManager
 import kotlinx.coroutines.launch
-import androidx.core.content.edit
 
 
 class P4_PantallaLoginLibreria : BaseActivity() {
@@ -57,7 +57,11 @@ class P4_PantallaLoginLibreria : BaseActivity() {
 
                 if (response.isSuccessful && response.body() != null) {
                     val loginResponse = response.body()!!
-                    saveAuthToken(loginResponse.token)
+                    SharedPreferencesManager.saveSession(
+                        this@P4_PantallaLoginLibreria,
+                        loginResponse.token,
+                        loginResponse.user.id
+                    )
                     goToNextScreen()
                 } else {
                     Toast.makeText(
@@ -71,11 +75,6 @@ class P4_PantallaLoginLibreria : BaseActivity() {
                 Toast.makeText(this@P4_PantallaLoginLibreria, "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    private fun saveAuthToken(token: String) {
-        val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
-        sharedPreferences.edit { putString("AUTH_TOKEN", token) }
     }
 
     private fun goToNextScreen() {
