@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import com.example.ellectorvoraz.adapters.CatalogAdapter
@@ -59,6 +60,18 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
     // Defaultea a catalogo de libros
     private var catalogType: String = "LIBROS"
 
+
+    private val detailActivityLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val itemDeleted = result.data?.getBooleanExtra("ITEM_DELETED", false) ?: false
+            if (itemDeleted) {
+                performSearch(searchView.query.toString())
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_p21_catalogo_reutilizable)
@@ -90,10 +103,11 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
         catalogAdapter = CatalogAdapter { clickedItem ->
             when (operationMode) {
                 MODE_NAVIGATION -> {
-                    val intent = Intent(this, P25_SeleccionElemento::class.java)
-                    intent.putExtra("EXTRA_ITEM_ID", clickedItem.id)
-                    intent.putExtra("EXTRA_CATALOG_TYPE", catalogType)
-                    startActivity(intent)
+                    val intent = Intent(this, P25_SeleccionElemento::class.java).apply {
+                        putExtra("EXTRA_ITEM_ID", clickedItem.id)
+                        putExtra("EXTRA_CATALOG_TYPE", catalogType)
+                    }
+                    detailActivityLauncher.launch(intent)
                 }
 
                 MODE_SELECTION -> {

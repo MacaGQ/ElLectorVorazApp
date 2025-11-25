@@ -1,7 +1,12 @@
 package com.example.ellectorvoraz
 
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
@@ -17,6 +22,7 @@ import com.example.ellectorvoraz.data.model.Proveedor
 import com.example.ellectorvoraz.data.model.Revista
 import com.example.ellectorvoraz.data.model.Venta
 import com.example.ellectorvoraz.data.network.RetrofitClient
+import com.example.ellectorvoraz.data.repository.DeletionRepository
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.async
 
@@ -25,6 +31,10 @@ class P25_SeleccionElemento : BaseActivity() {
     private lateinit var tituloTextView: TextView
     private lateinit var descripcionTextView: TextView
     private lateinit var detalleRecyclerView: RecyclerView
+
+    private var currentItemId: Int = -1
+    private var currentItemType: String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +50,9 @@ class P25_SeleccionElemento : BaseActivity() {
         val itemId = intent.getIntExtra("EXTRA_ITEM_ID", -1)
         val catalogType = intent.getStringExtra("EXTRA_CATALOG_TYPE")
 
+        this.currentItemId = itemId
+        this.currentItemType = catalogType
+
         if (itemId == -1 || catalogType == null) {
             Toast.makeText(this, "Error: No se pudo cargar el item", Toast.LENGTH_SHORT).show()
             finish()
@@ -49,6 +62,22 @@ class P25_SeleccionElemento : BaseActivity() {
         // Llamar a la API
         fetchItemDetails(itemId, catalogType)
     }
+
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.detalle_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+        }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_delete) {
+            handleDeleteClick()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
 
     private fun fetchItemDetails(id: Int, type: String) {
         lifecycleScope.launch {
@@ -227,5 +256,53 @@ class P25_SeleccionElemento : BaseActivity() {
         }
 
         detalleRecyclerView.adapter = DetalleAdapter(caracteristicas)
+    }
+
+    private fun handleDeleteClick() {
+        AlertDialog.Builder(this)
+            .setTitle("Confirmar Eliminación")
+            .setMessage("¿Estás seguro de que deseas eliminar este elemento? Esta acción no se puede deshacer")
+            .setPositiveButton("Sí, eliminar") { _, _ ->
+                performDelete()
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun performDelete() {
+        if (currentItemId == -1 || currentItemType == null) {
+            Toast.makeText(
+                this,
+                "Error: No se puede identificar el elemento a eliminar",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        lifecycleScope.launch {
+            val api = RetrofitClient.getInstance(this@P25_SeleccionElemento)
+            val deletionRepository = DeletionRepository(api)
+
+            val success = deletionRepository.deleteItem(currentItemType!!, currentItemId)
+
+            if (success) {
+                Toast.makeText(
+                    this@P25_SeleccionElemento,
+                    "Libro eliminado exitosamente",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                val resultIntent = Intent()
+                resultIntent.putExtra("ITEM_DELETED", true)
+                setResult(Activity.RESULT_OK, resultIntent)
+                finish()
+            } else {
+                Toast.makeText(
+                    this@P25_SeleccionElemento,
+                    "Error al eliminar el libro",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 }

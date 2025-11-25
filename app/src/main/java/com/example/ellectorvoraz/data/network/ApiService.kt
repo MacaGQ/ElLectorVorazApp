@@ -23,6 +23,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Body
 import retrofit2.Response
+import retrofit2.http.DELETE
 import retrofit2.http.Path
 import retrofit2.http.QueryMap
 
@@ -55,6 +56,9 @@ interface ApiService {
     // Ruta POST para agregar un libro a la base
     @POST("libros")
     suspend fun createLibro(@Body libroRequest: LibroRequest): Response<Libro>
+
+    @DELETE("libros/{id}")
+    suspend fun deleteLibro(@Path("id") id: Int): Response<Unit>
 
 
     // ----- Revistas -----
