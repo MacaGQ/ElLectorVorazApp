@@ -160,6 +160,37 @@ class P12_PantallaDeRegistroReutilizable : BaseActivity() {
                             ).show()
                         }
                     }
+                    "REVISTAS" -> {
+                        val revistaResponse = api.getRevistaId(id)
+
+                        if (revistaResponse.isSuccessful) {
+                            val revista = revistaResponse.body()!!
+
+                            val proveedorResponse = api.getProveedorId(revista.proveedorId)
+
+                            val itemData = revista.toMap().toMutableMap()
+
+                            if (proveedorResponse.isSuccessful) {
+                                val proveedor = proveedorResponse.body()!!
+                                itemData["proveedorId"] = proveedor.nombre
+                            } else {
+                                itemData["proveedorId"] = "Proveedor no encontrado"
+                            }
+
+                            itemData.forEach { (key, value) ->
+                                adapter.updateFieldValue(key, value.toString())
+                            }
+
+                            this@P12_PantallaDeRegistroReutilizable.proveedorSeleccionadoId = revista.proveedorId
+
+                        } else {
+                            Toast.makeText(
+                                this@P12_PantallaDeRegistroReutilizable,
+                                "Error al cargar los datos para editar",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                     else -> {
                     }
                 }

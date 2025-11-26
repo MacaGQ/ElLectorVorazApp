@@ -3,13 +3,14 @@ package com.example.ellectorvoraz.data.repository
 import com.example.ellectorvoraz.data.network.ApiService
 import com.example.ellectorvoraz.data.repository.creators.LibroCreator
 import com.example.ellectorvoraz.data.repository.creators.ItemCreator
-import com.example.ellectorvoraz.data.repository.creators.MagazineCreator
+import com.example.ellectorvoraz.data.repository.creators.RevistaCreator
 import com.example.ellectorvoraz.data.repository.creators.PedidoCreator
 import com.example.ellectorvoraz.data.repository.creators.ProveedorCreator
 import com.example.ellectorvoraz.data.repository.creators.SchoolItemCreator
 import com.example.ellectorvoraz.data.repository.creators.VentaCreator
 import com.example.ellectorvoraz.data.repository.updaters.ItemUpdater
 import com.example.ellectorvoraz.data.repository.updaters.LibroUpdater
+import com.example.ellectorvoraz.data.repository.updaters.RevistaUpdater
 
 import retrofit2.Response
 
@@ -19,7 +20,7 @@ class CreationRepository (api: ApiService){
 
     private val creators: Map<String, ItemCreator> = mapOf(
         "LIBROS" to LibroCreator(api),
-        "REVISTAS" to MagazineCreator(api),
+        "REVISTAS" to RevistaCreator(api),
         "ARTICULOS" to SchoolItemCreator(api),
         "PROVEEDORES" to ProveedorCreator(api),
         "PEDIDO" to PedidoCreator(api),
@@ -27,7 +28,8 @@ class CreationRepository (api: ApiService){
     )
 
     private val updaters: Map<String, ItemUpdater> = mapOf(
-        "LIBROS" to LibroUpdater(api)
+        "LIBROS" to LibroUpdater(api),
+        "REVISTAS" to RevistaUpdater(api)
     )
 
 

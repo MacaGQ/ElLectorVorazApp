@@ -74,6 +74,9 @@ interface ApiService {
     @POST("revistas")
     suspend fun createRevista(@Body revistaRequest: RevistaRequest): Response<Revista>
 
+    @PUT("revistas/{id}")
+    suspend fun updateRevista(@Path("id") id: Int, @Body revistaRequest: RevistaRequest): Response<Revista>
+
 
     // ----- Articulos Escolares -----
 
