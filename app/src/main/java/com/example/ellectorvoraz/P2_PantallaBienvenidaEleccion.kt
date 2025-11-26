@@ -3,6 +3,7 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.content.Intent
 import android.app.Activity
+import android.app.ActivityOptions
 
 class P2_PantallaBienvenidaEleccion : Activity() {
 
@@ -20,7 +21,13 @@ class P2_PantallaBienvenidaEleccion : Activity() {
 
         miImagenLibreria.setOnClickListener {
             val intent = Intent(this, P3_PantallaBienvenidaLibreria::class.java)
-            startActivity(intent)
+
+            val options = ActivityOptions.makeSceneTransitionAnimation(
+                this,
+                miImagenLibreria,
+                "logo_transicion")
+
+            startActivity(intent, options.toBundle())
         }
     }
 }

@@ -17,7 +17,6 @@
         <activity android:name=".P4_PantallaLoginLibreria" />
         <activity android:name=".P5_PantallaRegistroLibreria" />
         <activity android:name=".P7_PantallaMenuOpcionesReutilizable" />
-        <activity android:name=".P6_PantallaRegistroResultadoReutilizable" />
         <activity android:name=".P12_PantallaDeRegistroReutilizable" />
         <activity android:name=".P21_PantallaCatalogoReutilizable" />
         <activity android:name=".P25_SeleccionElemento" />
