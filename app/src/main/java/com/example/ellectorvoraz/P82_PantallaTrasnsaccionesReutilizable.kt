@@ -66,23 +66,37 @@ class P82_PantallaTrasnsaccionesReutilizable : BaseActivity() {
                 data?.getDoubleExtra(P21_PantallaCatalogoReutilizable.RESULT_PRODUCT_PRICE, 0.0)
                     ?: 0.0
 
+            val stockDisponible = data?.getIntExtra(P21_PantallaCatalogoReutilizable.RESULT_PRODUCT_STOCK, 0) ?: 0
+
+
             if (productoId != null && productoId != -1) {
                 val itemExistente = itemsEnCarrito.find { it.productoId == productoId && it.tipoProducto == tipoProducto }
                 if (itemExistente != null) {
-                    itemExistente.cantidad++
-                    itemExistente.subtotal = itemExistente.cantidad * itemExistente.precioUnitario
+                    if(itemExistente.cantidad < stockDisponible) {
+                        itemExistente.cantidad++
+                        itemExistente.subtotal =
+                            itemExistente.cantidad * itemExistente.precioUnitario
+                    } else {
+                        Toast.makeText(this, "No hay más stock disponible para ${nombreProducto}", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
-                    val precioInicialUnitario = if( transactionType == TYPE_VENTA) precio else 0.0
-                    val nuevoItem = TransactionItem(
-                        productoId,
-                        tipoProducto,
-                        nombreProducto,
-                        1,
-                        precioInicialUnitario,
-                        precioInicialUnitario)
-                    itemsEnCarrito.add(nuevoItem)
+                    if (stockDisponible > 0) {
+                        val precioInicialUnitario =
+                            if (transactionType == TYPE_VENTA) precio else 0.0
+                        val nuevoItem = TransactionItem(
+                            productoId,
+                            tipoProducto,
+                            nombreProducto,
+                            1,
+                            precioInicialUnitario,
+                            precioInicialUnitario,
+                            stockDisponible
+                        )
+                        itemsEnCarrito.add(nuevoItem)
+                    } else {
+                        Toast.makeText(this, "$nombreProducto no tiene stock disponible", Toast.LENGTH_SHORT).show()
+                    }
                 }
-
                 transactionAdapter.notifyDataSetChanged()
                 actualizarTotal()
             }
@@ -265,9 +279,14 @@ class P82_PantallaTrasnsaccionesReutilizable : BaseActivity() {
                     ).show()
                     finish()
                 } else {
+                    val errorMessage = when(response.code()) {
+                        409 -> "Stock insuficiente para completar la venta"
+                        else -> "Error del servidor: ${response.code()}"
+                    }
                     Toast.makeText(
                         this@P82_PantallaTrasnsaccionesReutilizable,
-                        "Error del servidor: ${response.code()}", Toast.LENGTH_SHORT
+                        errorMessage,
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
             } catch (e: Exception) {

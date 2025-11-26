@@ -39,6 +39,9 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
         // Se guardan el tupo de producto y el precio para las transacciones
         const val RESULT_PRODUCT_TYPE = "RESULT_PRODUCT_TYPE"
         const val RESULT_PRODUCT_PRICE = "RESULT_PRODUCT_PRICE"
+
+        // Stock del producto para evitar seleccionar más de lo disponible
+        const val RESULT_PRODUCT_STOCK = "RESULT_PRODUCT_STOCK"
     }
 
     private lateinit var catalogAdapter: CatalogAdapter
@@ -97,9 +100,18 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
                 }
 
                 MODE_SELECTION -> {
+                    val stock = when (clickedItem) {
+                        is Libro -> clickedItem.stock
+                        is Revista -> clickedItem.stock
+                        is Articulo_Escolar -> clickedItem.stock
+                        else -> 0
+                    }
+
                     val resultIntent = Intent()
                     resultIntent.putExtra(RESULT_SELECTED_ID, clickedItem.id)
                     resultIntent.putExtra(RESULT_SELECTED_NAME, clickedItem.nombre)
+                    resultIntent.putExtra(RESULT_PRODUCT_STOCK, stock)
+
 
                     when (clickedItem) {
                         is Libro -> {

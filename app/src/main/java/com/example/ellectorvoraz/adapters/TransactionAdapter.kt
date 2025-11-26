@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ellectorvoraz.R
 import com.example.ellectorvoraz.data.model.TransactionItem
@@ -89,10 +90,23 @@ class TransactionAdapter(
         }
 
         holder.btnSumar.setOnClickListener {
-            item.cantidad++
-            item.subtotal = item.cantidad * item.precioUnitario
-            notifyItemChanged(position)
-            onDataChanged()
+            val context = holder.itemView.context
+
+            if (item.cantidad < item.stockMaximo) {
+                item.cantidad++
+                item.subtotal = item.cantidad * item.precioUnitario
+                notifyItemChanged(position)
+                onDataChanged()
+            } else {
+                Toast.makeText(
+                    context,
+                    "No hay más stock disponible para ${item.nombreProducto}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+
+
         }
 
         holder.btnRestar.setOnClickListener {
