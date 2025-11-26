@@ -11,6 +11,7 @@ import com.example.ellectorvoraz.data.repository.creators.VentaCreator
 import com.example.ellectorvoraz.data.repository.updaters.ArticuloUpdater
 import com.example.ellectorvoraz.data.repository.updaters.ItemUpdater
 import com.example.ellectorvoraz.data.repository.updaters.LibroUpdater
+import com.example.ellectorvoraz.data.repository.updaters.ProveedorUpdater
 import com.example.ellectorvoraz.data.repository.updaters.RevistaUpdater
 
 import retrofit2.Response
@@ -31,7 +32,8 @@ class CreationRepository (api: ApiService){
     private val updaters: Map<String, ItemUpdater> = mapOf(
         "LIBROS" to LibroUpdater(api),
         "REVISTAS" to RevistaUpdater(api),
-        "ARTICULOS" to ArticuloUpdater(api)
+        "ARTICULOS" to ArticuloUpdater(api),
+        "PROVEEDORES" to ProveedorUpdater(api)
     )
 
 

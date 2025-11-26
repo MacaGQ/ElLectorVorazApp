@@ -222,6 +222,28 @@ class P12_PantallaDeRegistroReutilizable : BaseActivity() {
                             ).show()
                         }
                     }
+                    "PROVEEDORES" -> {
+                        val proveedorResponse = api.getProveedorId(id)
+
+                        if (proveedorResponse.isSuccessful) {
+                            val proveedor = proveedorResponse.body()!!
+
+                            val itemData = proveedor.toMap().toMutableMap()
+
+                            itemData.forEach { (key, value) ->
+                                adapter.updateFieldValue(key, value.toString())
+                            }
+
+                            this@P12_PantallaDeRegistroReutilizable.proveedorSeleccionadoId = proveedor.id
+
+                        } else {
+                            Toast.makeText(
+                                this@P12_PantallaDeRegistroReutilizable,
+                                "Error al cargar los datos para editar",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                     else -> {
                     }
                 }

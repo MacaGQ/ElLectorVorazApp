@@ -118,6 +118,9 @@ interface ApiService {
     @POST("proveedores")
     suspend fun createProveedor(@Body proveedorRequest: ProveedorRequest): Response<Proveedor>
 
+    @PUT("proveedores/{id}")
+    suspend fun updateProveedor(@Path("id") id: Int, @Body proveedorRequest: ProveedorRequest): Response<Proveedor>
+
 
     // ----- Ventas -----
 
