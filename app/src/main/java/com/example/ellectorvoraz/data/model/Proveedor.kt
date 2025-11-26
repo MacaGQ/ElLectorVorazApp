@@ -27,3 +27,13 @@ data class Proveedor (
     override val descripcion: String
         get() = this.categoria
 }
+
+fun Proveedor.toMap(): Map<String, Any> {
+    return mapOf(
+        "nombre" to nombreProveedor,
+        "telefono" to telefono,
+        "email" to email,
+        "direccion" to direccion,
+        "categoria" to categoria
+    )
+}

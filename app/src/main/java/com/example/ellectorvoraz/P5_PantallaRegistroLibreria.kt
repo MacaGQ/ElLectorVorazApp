@@ -143,7 +143,17 @@ class P5_PantallaRegistroLibreria : BaseActivity() {
                 val response = api.register(request)
 
                 if (response.isSuccessful) {
-                    goToSuccessScreen()
+                    Toast.makeText(
+                        this@P5_PantallaRegistroLibreria,
+                        "Registro exitoso! Ya puede iniciar sesión",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    val intent = Intent(this@P5_PantallaRegistroLibreria, P4_PantallaLoginLibreria::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+
                 } else if (response.code() == 409) {
                     Toast.makeText(
                         this@P5_PantallaRegistroLibreria,
@@ -167,13 +177,4 @@ class P5_PantallaRegistroLibreria : BaseActivity() {
             }
         }
     }
-
-    private fun goToSuccessScreen() {
-        val intent = Intent(this@P5_PantallaRegistroLibreria, P6_PantallaRegistroResultadoReutilizable::class.java)
-        intent.putExtra("task", "register")
-        intent.putExtra("status", "success")
-        startActivity(intent)
-        this.finish()
-    }
-
 }

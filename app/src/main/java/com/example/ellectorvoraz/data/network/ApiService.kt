@@ -10,6 +10,7 @@ import com.example.ellectorvoraz.data.model.LoginRequest
 import com.example.ellectorvoraz.data.model.LoginResponse
 import com.example.ellectorvoraz.data.model.Pedido
 import com.example.ellectorvoraz.data.model.PedidoRequest
+import com.example.ellectorvoraz.data.model.PedidoUpdateRequest
 import com.example.ellectorvoraz.data.model.Proveedor
 import com.example.ellectorvoraz.data.model.ProveedorRequest
 import com.example.ellectorvoraz.data.model.RegisterRequest
@@ -23,6 +24,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Body
 import retrofit2.Response
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.QueryMap
 
@@ -56,6 +58,9 @@ interface ApiService {
     @POST("libros")
     suspend fun createLibro(@Body libroRequest: LibroRequest): Response<Libro>
 
+    @PUT("libros/{id}")
+    suspend fun updateLibro(@Path("id") id: Int, @Body libroRequest: LibroRequest): Response<Libro>
+
 
     // ----- Revistas -----
 
@@ -69,6 +74,9 @@ interface ApiService {
 
     @POST("revistas")
     suspend fun createRevista(@Body revistaRequest: RevistaRequest): Response<Revista>
+
+    @PUT("revistas/{id}")
+    suspend fun updateRevista(@Path("id") id: Int, @Body revistaRequest: RevistaRequest): Response<Revista>
 
 
     // ----- Articulos Escolares -----
@@ -84,6 +92,9 @@ interface ApiService {
     @POST("articulos")
     suspend fun createArticulo(@Body articuloRequest: ArticuloRequest): Response<Articulo_Escolar>
 
+    @PUT("articulos/{id}")
+    suspend fun updateArticulo(@Path("id") id: Int, @Body articuloRequest: ArticuloRequest): Response<Articulo_Escolar>
+
 
     // ----- Pedidos -----
     @GET("pedidos")
@@ -98,6 +109,9 @@ interface ApiService {
     @POST("pedidos")
     suspend fun createPedido(@Body pedidoRequest: PedidoRequest): Response<Any>
 
+    @PUT("pedidos/{id}")
+    suspend fun updatePedido(@Path("id") id: Int, @Body pedidoUpdateRequest: PedidoUpdateRequest): Response<Pedido>
+
     // ----- Proveedores -----
     @GET("proveedores")
     suspend fun getProveedores(@QueryMap options: Map<String, String>): Response<List<Proveedor>>
@@ -107,6 +121,9 @@ interface ApiService {
 
     @POST("proveedores")
     suspend fun createProveedor(@Body proveedorRequest: ProveedorRequest): Response<Proveedor>
+
+    @PUT("proveedores/{id}")
+    suspend fun updateProveedor(@Path("id") id: Int, @Body proveedorRequest: ProveedorRequest): Response<Proveedor>
 
 
     // ----- Ventas -----
