@@ -6,5 +6,6 @@ data class TransactionItem(
     val nombreProducto: String,
     var cantidad: Int = 1,
     var precioUnitario: Double,
-    var subtotal: Double = precioUnitario
+    var subtotal: Double = precioUnitario,
+    val stockMaximo: Int
 )
