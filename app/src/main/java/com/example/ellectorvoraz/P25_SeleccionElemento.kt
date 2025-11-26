@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ellectorvoraz.adapters.DetalleAdapter
@@ -22,6 +23,7 @@ import com.example.ellectorvoraz.data.model.Proveedor
 import com.example.ellectorvoraz.data.model.Revista
 import com.example.ellectorvoraz.data.model.Venta
 import com.example.ellectorvoraz.data.network.RetrofitClient
+import com.example.ellectorvoraz.data.repository.CreationRepository
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.async
 
@@ -33,6 +35,9 @@ class P25_SeleccionElemento : BaseActivity() {
 
     private var currentItemId: Int = -1
     private var currentCatalogType: String? = null
+
+    private var currentPedido: Pedido? = null
+    private lateinit var creationRepository: CreationRepository
 
     private val editLauncher =
         registerForActivityResult(
@@ -66,6 +71,9 @@ class P25_SeleccionElemento : BaseActivity() {
         this.currentItemId = itemId
         this.currentCatalogType = catalogType
 
+        val api = RetrofitClient.getInstance(this)
+        creationRepository = CreationRepository(api)
+
         if (itemId == -1 || catalogType == null) {
             Toast.makeText(this, "Error: No se pudo cargar el item", Toast.LENGTH_SHORT).show()
             finish()
@@ -77,7 +85,7 @@ class P25_SeleccionElemento : BaseActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        if (currentCatalogType in listOf("LIBROS", "REVISTAS", "ARTICULOS", "PROVEEDORES")) {
+        if (currentCatalogType in listOf("LIBROS", "REVISTAS", "ARTICULOS", "PROVEEDORES", "PEDIDOS")) {
             menuInflater.inflate(R.menu.detalle_menu, menu)
         }
         return true
@@ -86,15 +94,26 @@ class P25_SeleccionElemento : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_edit -> {
-                val intent = Intent(this, P12_PantallaDeRegistroReutilizable::class.java).apply {
-                    putExtra(
-                        P12_PantallaDeRegistroReutilizable.EXTRA_MODE,
-                        P12_PantallaDeRegistroReutilizable.MODE_EDIT
-                    )
-                    putExtra(P12_PantallaDeRegistroReutilizable.EXTRA_FORM_TYPE, currentCatalogType)
-                    putExtra(P12_PantallaDeRegistroReutilizable.EXTRA_ITEM_ID, currentItemId)
+                if (currentCatalogType == "PEDIDOS" && currentPedido != null) {
+                    mostrarDialogoCambioEstado()
+                } else {
+                    val intent =
+                        Intent(this, P12_PantallaDeRegistroReutilizable::class.java).apply {
+                            putExtra(
+                                P12_PantallaDeRegistroReutilizable.EXTRA_MODE,
+                                P12_PantallaDeRegistroReutilizable.MODE_EDIT
+                            )
+                            putExtra(
+                                P12_PantallaDeRegistroReutilizable.EXTRA_FORM_TYPE,
+                                currentCatalogType
+                            )
+                            putExtra(
+                                P12_PantallaDeRegistroReutilizable.EXTRA_ITEM_ID,
+                                currentItemId
+                            )
+                        }
+                    editLauncher.launch(intent)
                 }
-                editLauncher.launch(intent)
                 true
             }
 
@@ -119,6 +138,7 @@ class P25_SeleccionElemento : BaseActivity() {
                         val detalles = detallesResponse.body()
 
                         if (pedido != null && detalles != null) {
+                            this@P25_SeleccionElemento.currentPedido = pedido
                             updateUiPorPedido(pedido, detalles)
                         } else {
                             Toast.makeText(
@@ -279,5 +299,50 @@ class P25_SeleccionElemento : BaseActivity() {
         }
 
         detalleRecyclerView.adapter = DetalleAdapter(caracteristicas)
+    }
+
+    private fun mostrarDialogoCambioEstado() {
+        val estadosPosibles = arrayOf("PENDIENTE","RECIBIDO", "CANCELADO")
+
+        AlertDialog.Builder(this)
+            .setTitle("Selecciona un estado")
+            .setItems(estadosPosibles) { _, which ->
+                val nuevoEstado = estadosPosibles[which]
+                actualizarEstadoPedido(nuevoEstado)
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun actualizarEstadoPedido(nuevoEstado: String) {
+        val pedidoActual = currentPedido ?: return
+
+        lifecycleScope.launch {
+            try {
+                val extraData = mapOf("nuevoEstado" to nuevoEstado)
+                val response = creationRepository.updateItem("PEDIDOS", pedidoActual.id, emptyMap(), extraData)
+
+                if (response.isSuccessful) {
+                    Toast.makeText(
+                        this@P25_SeleccionElemento,
+                        "Estado del pedido actualizado a '${nuevoEstado}'",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    fetchItemDetails(pedidoActual.id, "PEDIDOS")
+                } else {
+                    Toast.makeText(
+                        this@P25_SeleccionElemento,
+                        "Error al actualizar el estado del pedido: ${response.code()}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(
+                    this@P25_SeleccionElemento,
+                    "Error al actualizar: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 }

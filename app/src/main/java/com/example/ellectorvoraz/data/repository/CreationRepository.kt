@@ -11,6 +11,7 @@ import com.example.ellectorvoraz.data.repository.creators.VentaCreator
 import com.example.ellectorvoraz.data.repository.updaters.ArticuloUpdater
 import com.example.ellectorvoraz.data.repository.updaters.ItemUpdater
 import com.example.ellectorvoraz.data.repository.updaters.LibroUpdater
+import com.example.ellectorvoraz.data.repository.updaters.PedidoUpdater
 import com.example.ellectorvoraz.data.repository.updaters.ProveedorUpdater
 import com.example.ellectorvoraz.data.repository.updaters.RevistaUpdater
 
@@ -33,7 +34,8 @@ class CreationRepository (api: ApiService){
         "LIBROS" to LibroUpdater(api),
         "REVISTAS" to RevistaUpdater(api),
         "ARTICULOS" to ArticuloUpdater(api),
-        "PROVEEDORES" to ProveedorUpdater(api)
+        "PROVEEDORES" to ProveedorUpdater(api),
+        "PEDIDOS" to PedidoUpdater(api)
     )
 
 

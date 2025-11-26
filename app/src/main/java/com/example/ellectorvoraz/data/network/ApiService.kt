@@ -10,6 +10,7 @@ import com.example.ellectorvoraz.data.model.LoginRequest
 import com.example.ellectorvoraz.data.model.LoginResponse
 import com.example.ellectorvoraz.data.model.Pedido
 import com.example.ellectorvoraz.data.model.PedidoRequest
+import com.example.ellectorvoraz.data.model.PedidoUpdateRequest
 import com.example.ellectorvoraz.data.model.Proveedor
 import com.example.ellectorvoraz.data.model.ProveedorRequest
 import com.example.ellectorvoraz.data.model.RegisterRequest
@@ -107,6 +108,9 @@ interface ApiService {
 
     @POST("pedidos")
     suspend fun createPedido(@Body pedidoRequest: PedidoRequest): Response<Any>
+
+    @PUT("pedidos/{id}")
+    suspend fun updatePedido(@Path("id") id: Int, @Body pedidoUpdateRequest: PedidoUpdateRequest): Response<Pedido>
 
     // ----- Proveedores -----
     @GET("proveedores")
