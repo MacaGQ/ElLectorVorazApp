@@ -7,7 +7,18 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-
+    <include
+        android:id="@+id/logo_header"
+        layout="@layout/logo_header_reutilizable"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.47"
+        app:layout_constraintVertical_bias="0.130" />
+<!--
     <TextView
         android:id="@+id/signup_txt_app_name"
         android:layout_width="wrap_content"
@@ -24,7 +35,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.114" />
-
+-->
     <EditText
         android:id="@+id/signup_input_username"
         android:layout_width="match_parent"
@@ -39,7 +50,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signup_txt_app_name"
+        app:layout_constraintTop_toBottomOf="@+id/logo_header"
         app:layout_constraintVertical_bias="0.131" />
 
     <EditText
