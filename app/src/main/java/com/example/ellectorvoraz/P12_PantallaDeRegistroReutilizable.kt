@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ellectorvoraz.adapters.FormAdapter
+import com.example.ellectorvoraz.data.model.toMap
 import com.example.ellectorvoraz.data.repository.FormRepository
 import com.example.ellectorvoraz.data.network.RetrofitClient
 import com.example.ellectorvoraz.data.repository.CreationRepository
@@ -19,7 +20,14 @@ class P12_PantallaDeRegistroReutilizable : BaseActivity() {
 
     companion object {
         const val EXTRA_FORM_TYPE = "EXTRA_FORM_TYPE"
+        const val EXTRA_MODE = "EXTRA_MODE"
+        const val EXTRA_ITEM_ID = "EXTRA_ITEM_ID"
+        const val MODE_CREATE = "CREATE"
+        const val MODE_EDIT = "EDIT"
     }
+
+    private var mode: String = MODE_CREATE
+    private var itemId: Int? = null
 
     private lateinit var adapter: FormAdapter
     private lateinit var formType: String
@@ -46,11 +54,17 @@ class P12_PantallaDeRegistroReutilizable : BaseActivity() {
         val api = RetrofitClient.getInstance(this)
         creationRepository = CreationRepository(api)
 
+        // Determinar el modo del formulario (crear o editar) y defaultea a crear
+        mode = intent.getStringExtra(EXTRA_MODE) ?: MODE_CREATE
 
         // Obtener el tipo de form a crear (defaultea a registro de libro)
         // El tipo de form se define en el intent de la actividad anterior
         // El contenido del form se crea en data/FormData
         formType = intent.getStringExtra(EXTRA_FORM_TYPE) ?: ""
+
+        if (mode == MODE_EDIT) {
+            itemId = intent.getIntExtra(EXTRA_ITEM_ID, -1)
+        }
 
         if (formType.isEmpty()) {
             Toast.makeText(this, "Error: Formulario no definido", Toast.LENGTH_SHORT).show()
@@ -65,7 +79,7 @@ class P12_PantallaDeRegistroReutilizable : BaseActivity() {
         }
 
         // Inicializacion de las barras de superior e inferior
-        setupTopBar(formScreen.title)
+        setupTopBar(if (mode == MODE_EDIT) "EDITAR ${formScreen.title}" else formScreen.title)
         setupBottomNav()
 
         // Cargar el RecyclerView con los campos
@@ -97,13 +111,64 @@ class P12_PantallaDeRegistroReutilizable : BaseActivity() {
         }
         recyclerView.adapter = adapter
 
+        if (mode == MODE_EDIT && itemId != null && itemId != -1) {
+            loadItemData(itemId!!, formType)
+        }
+
         // Texto del boton de registro
         val submitButton = findViewById<Button>(R.id.btnRegistrar)
-        submitButton.text = getString(R.string.btn_registrar)
+        submitButton.text = if (mode == MODE_EDIT) "Guardar Cambios" else "Registrar"
         submitButton.setOnClickListener {
             // Lo ingresado pro el usuario esta en adapter.formData
             val submittedData = adapter.formData
             handleSubmit(formType, submittedData)
+        }
+    }
+
+    private fun loadItemData(id: Int, type: String) {
+        lifecycleScope.launch {
+            try {
+                val api = RetrofitClient.getInstance(this@P12_PantallaDeRegistroReutilizable)
+                when (type) {
+                    "LIBROS" -> {
+                        val libroResponse = api.getLibroId(id)
+
+                        if(libroResponse.isSuccessful) {
+                            val libro = libroResponse.body()!!
+
+                            val proveedorResponse = api.getProveedorId(libro.proveedorId)
+
+                            val itemData = libro.toMap().toMutableMap()
+
+                            if (proveedorResponse.isSuccessful) {
+                                val proveedor = proveedorResponse.body()!!
+                                adapter.updateFieldValue("proveedorId", proveedor.nombre)
+                            } else {
+                                adapter.updateFieldValue("proveedorId", "Proveedor no encontrado")
+                            }
+
+                            itemData.forEach { (key, value) ->
+                                adapter.updateFieldValue(key, value.toString())
+                            }
+
+                            this@P12_PantallaDeRegistroReutilizable.proveedorSeleccionadoId = libro.proveedorId
+                        } else {
+                            Toast.makeText(
+                                this@P12_PantallaDeRegistroReutilizable,
+                                "Error al cargar los datos para editar",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                    else -> {
+                    }
+                }
+            } catch (e: Exception) {
+                Toast.makeText(
+                    this@P12_PantallaDeRegistroReutilizable,
+                    "Error al cargar los datos para editar",
+                    Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -116,13 +181,27 @@ class P12_PantallaDeRegistroReutilizable : BaseActivity() {
 
         lifecycleScope.launch {
             try {
-                val response = creationRepository.createItem(formType, data, extraData)
+                val response = if (mode == MODE_EDIT) {
+                    creationRepository.updateItem(formType, itemId!!, data, extraData)
+
+                } else {
+                    creationRepository.createItem(formType, data, extraData)
+                }
 
                 if (response.isSuccessful) {
-                    Toast.makeText(this@P12_PantallaDeRegistroReutilizable, "Guardado exitoso", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@P12_PantallaDeRegistroReutilizable,
+                        "Guardado exitoso",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    setResult(Activity.RESULT_OK)
                     finish()
                 } else {
-                    Toast.makeText(this@P12_PantallaDeRegistroReutilizable, "Error del servidor: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@P12_PantallaDeRegistroReutilizable,
+                        "Error del servidor: ${response.code()}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             } catch (e:Exception) {
                 Toast.makeText(this@P12_PantallaDeRegistroReutilizable, "Error: ${e.message}", Toast.LENGTH_SHORT).show()

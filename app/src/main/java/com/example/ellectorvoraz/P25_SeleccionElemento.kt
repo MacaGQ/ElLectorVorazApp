@@ -1,9 +1,14 @@
 package com.example.ellectorvoraz
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ellectorvoraz.adapters.DetalleAdapter
@@ -26,6 +31,24 @@ class P25_SeleccionElemento : BaseActivity() {
     private lateinit var descripcionTextView: TextView
     private lateinit var detalleRecyclerView: RecyclerView
 
+    private var currentItemId: Int = -1
+    private var currentCatalogType: String? = null
+
+    private val editLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            fetchItemDetails(currentItemId, currentCatalogType!!)
+            Toast.makeText(
+                this,
+                "Actualizacion exitosa",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_p25_seleccion_elemento)
@@ -40,6 +63,9 @@ class P25_SeleccionElemento : BaseActivity() {
         val itemId = intent.getIntExtra("EXTRA_ITEM_ID", -1)
         val catalogType = intent.getStringExtra("EXTRA_CATALOG_TYPE")
 
+        this.currentItemId = itemId
+        this.currentCatalogType = catalogType
+
         if (itemId == -1 || catalogType == null) {
             Toast.makeText(this, "Error: No se pudo cargar el item", Toast.LENGTH_SHORT).show()
             finish()
@@ -48,6 +74,32 @@ class P25_SeleccionElemento : BaseActivity() {
 
         // Llamar a la API
         fetchItemDetails(itemId, catalogType)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        if (currentCatalogType in listOf("LIBROS", "REVISTAS", "ARTICULOS", "PROVEEDORES")) {
+            menuInflater.inflate(R.menu.detalle_menu, menu)
+        }
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_edit -> {
+                val intent = Intent(this, P12_PantallaDeRegistroReutilizable::class.java).apply {
+                    putExtra(
+                        P12_PantallaDeRegistroReutilizable.EXTRA_MODE,
+                        P12_PantallaDeRegistroReutilizable.MODE_EDIT
+                    )
+                    putExtra(P12_PantallaDeRegistroReutilizable.EXTRA_FORM_TYPE, currentCatalogType)
+                    putExtra(P12_PantallaDeRegistroReutilizable.EXTRA_ITEM_ID, currentItemId)
+                }
+                editLauncher.launch(intent)
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun fetchItemDetails(id: Int, type: String) {
