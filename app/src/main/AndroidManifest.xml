@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ElLectorVoraz"
         android:usesCleartextTraffic="true">
+        <activity android:name=".P2_PantallaBienvenidaEleccion" />
+        <activity android:name=".P3_PantallaBienvenidaLibreria" />
+        <activity android:name=".P4_PantallaLoginLibreria" />
         <activity android:name=".P5_PantallaRegistroLibreria" />
         <activity android:name=".P7_PantallaMenuOpcionesReutilizable" />
         <activity android:name=".P6_PantallaRegistroResultadoReutilizable" />
@@ -20,7 +23,7 @@
         <activity android:name=".P25_SeleccionElemento" />
         <activity android:name=".P82_PantallaTrasnsaccionesReutilizable"/>
         <activity
-            android:name=".P4_PantallaLoginLibreria"
+            android:name=".P1_PantallaBienvenida"
             android:exported="true"
             android:label="@string/app_name">
             <intent-filter>
