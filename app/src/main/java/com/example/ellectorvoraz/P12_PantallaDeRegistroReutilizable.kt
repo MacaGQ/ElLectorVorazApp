@@ -191,6 +191,37 @@ class P12_PantallaDeRegistroReutilizable : BaseActivity() {
                             ).show()
                         }
                     }
+                    "ARTICULOS" -> {
+                        val ArticuloResponse = api.getArticuloId(id)
+
+                        if (ArticuloResponse.isSuccessful) {
+                            val Articulo = ArticuloResponse.body()!!
+
+                            val proveedorResponse = api.getProveedorId(Articulo.proveedorId)
+
+                            val itemData = Articulo.toMap().toMutableMap()
+
+                            if (proveedorResponse.isSuccessful) {
+                                val proveedor = proveedorResponse.body()!!
+                                itemData["proveedorId"] = proveedor.nombre
+                            } else {
+                                itemData["proveedorId"] = "Proveedor no encontrado"
+                            }
+
+                            itemData.forEach { (key, value) ->
+                                adapter.updateFieldValue(key, value.toString())
+                            }
+
+                            this@P12_PantallaDeRegistroReutilizable.proveedorSeleccionadoId = Articulo.proveedorId
+
+                        } else {
+                            Toast.makeText(
+                                this@P12_PantallaDeRegistroReutilizable,
+                                "Error al cargar los datos para editar",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                     else -> {
                     }
                 }

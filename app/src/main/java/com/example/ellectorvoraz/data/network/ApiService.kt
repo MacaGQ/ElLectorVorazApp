@@ -91,6 +91,9 @@ interface ApiService {
     @POST("articulos")
     suspend fun createArticulo(@Body articuloRequest: ArticuloRequest): Response<Articulo_Escolar>
 
+    @PUT("articulos/{id}")
+    suspend fun updateArticulo(@Path("id") id: Int, @Body articuloRequest: ArticuloRequest): Response<Articulo_Escolar>
+
 
     // ----- Pedidos -----
     @GET("pedidos")
