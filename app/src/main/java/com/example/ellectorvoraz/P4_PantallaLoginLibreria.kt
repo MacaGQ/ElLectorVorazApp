@@ -57,10 +57,11 @@ class P4_PantallaLoginLibreria : BaseActivity() {
 
                 if (response.isSuccessful && response.body() != null) {
                     val loginResponse = response.body()!!
-                    SharedPreferencesManager.saveSession(
+
+                    SharedPreferencesManager.saveUserSession(
                         this@P4_PantallaLoginLibreria,
                         loginResponse.token,
-                        loginResponse.user.id
+                        loginResponse.user
                     )
                     goToNextScreen()
                 } else {

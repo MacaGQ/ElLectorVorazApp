@@ -2,7 +2,7 @@
     <string name="app_name">El Lector Voraz</string>
     <!--Nav Bar-->
     <string name="nav_inicio">Inicio</string>
-    <string name="nav_compras">Compras</string>
+    <string name="nav_venta">Venta</string>
     <string name="nav_avisos">Avisos</string>
     <string name="nav_perfil">Perfil</string>
 

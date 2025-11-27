@@ -1,11 +1,13 @@
 package com.example.ellectorvoraz
 
-import kotlin.reflect.KClass
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.ellectorvoraz.util.SharedPreferencesManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 abstract class BaseActivity(): AppCompatActivity() {
@@ -43,21 +45,109 @@ abstract class BaseActivity(): AppCompatActivity() {
 
     // Setup de la barra de navegacion inferior
     protected fun setupBottomNav() {
+        Log.d("BottomNavDebug", "setupBottomNav() llamado desde ${this::class.simpleName}")
         // Layout de la barra de navegacion
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation) ?: return
 
         // Definir a qué pantalla ir según lo seleccionado
         bottomNav.setOnItemSelectedListener { item ->
-            val nextActivity: KClass<*>? = when (item.itemId) {
-                R.id.navigation_home -> P7_PantallaMenuOpcionesReutilizable::class // COMPLETAR DEMAS OPCIONES
-                else -> null
+            Log.d("BottomNavDebug", "Item seleccionado: ${item.title}")
+
+            if (item.isChecked) {
+                return@setOnItemSelectedListener true
             }
-            // Solo cambiar de pantalla si se toca una opcion distinta a la pantalla actual
-            if (nextActivity != null && nextActivity != this::class) {
-                val intent = Intent(this, nextActivity.java)
-                startActivity(intent)
-            }
+            handleNavigation(item.itemId)
             true
+
+            bottomNav.post{
+                updateBottomNavSelection(bottomNav)
+            }
         }
+    }
+
+    private fun handleNavigation(itemId: Int) {
+        Log.d("BottomNavDebug", "handleNavigation() llamado con itemId: $itemId")
+        when (itemId) {
+            R.id.navigation_home -> {
+                val intent = Intent(this, P7_PantallaMenuOpcionesReutilizable::class.java).apply {
+                    putExtra(P7_PantallaMenuOpcionesReutilizable.EXTRA_MENU_TYPE, "LIBRERIA_GENERAL")
+                }
+                startActivity(intent)
+                true
+            }
+            R.id.navigation_shopping -> {
+                val intent = Intent(this, P82_PantallaTrasnsaccionesReutilizable::class.java).apply {
+                    putExtra(P82_PantallaTrasnsaccionesReutilizable.EXTRA_TRANSACTION_TYPE, P82_PantallaTrasnsaccionesReutilizable.TYPE_VENTA)
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                }
+                startActivity(intent)
+                true
+            }
+            R.id.navigation_notifications -> {
+                Toast.makeText(
+                    this,
+                    "Sección 'Avisos' en desarrollo",
+                    Toast.LENGTH_SHORT
+                ).show()
+                false
+            }
+            R.id.navigation_profile -> {
+                val userId = SharedPreferencesManager.getUserId(this)
+                if (userId != -1) {
+                    val intent = Intent(this, P25_SeleccionElemento::class.java).apply {
+                        putExtra("EXTRA_ITEM_ID", userId)
+                        putExtra("EXTRA_CATALOG_TYPE", "PERFIL_USUARIO")
+                    }
+                    startActivity(intent)
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Error: Vuelva a iniciar sesión",
+                        Toast.LENGTH_SHORT
+                    )
+                }
+                true
+            }
+            else -> false
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        if (bottomNav != null) {
+            updateBottomNavSelection(bottomNav)
+        }
+    }
+
+    private fun updateBottomNavSelection(bottomNav: BottomNavigationView) {
+
+        bottomNav.menu.setGroupCheckable(0, true, false)
+        for (i in 0 until bottomNav.menu.size()) {
+            bottomNav.menu.getItem(i).isChecked = false
+        }
+        bottomNav.menu.setGroupCheckable(0, true, true)
+
+        val itemToSelect = when (this) {
+            is P7_PantallaMenuOpcionesReutilizable -> R.id.navigation_home
+            is P82_PantallaTrasnsaccionesReutilizable -> R.id.navigation_shopping
+            is P25_SeleccionElemento -> {
+                if(intent.getStringExtra("EXTRA_CATALOG_TYPE") == "PERFIL_USUARIO") {
+                    R.id.navigation_profile
+                } else {
+                    null
+                }
+            }
+            else -> null
+        }
+
+        if (itemToSelect != null) {
+            bottomNav.menu.findItem(itemToSelect).isChecked = true
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
     }
 }
