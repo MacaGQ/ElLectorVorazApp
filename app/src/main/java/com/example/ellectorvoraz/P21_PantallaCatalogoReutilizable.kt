@@ -66,6 +66,8 @@ class P21_PantallaCatalogoReutilizable : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_p21_catalogo_reutilizable)
 
+        setupBottomNav()
+
         // Datos recibidos del intent en la pantalla anterior
         catalogType = intent.getStringExtra(EXTRA_CATALOG_TYPE) ?: "LIBROS"
         operationMode = intent.getStringExtra(EXTRA_OPERATION_MODE) ?: MODE_NAVIGATION

@@ -61,6 +61,8 @@ class P25_SeleccionElemento : BaseActivity() {
         setContentView(R.layout.activity_p25_seleccion_elemento)
         setupTopBar("Detalle del Producto")
 
+        setupBottomNav()
+
         // Vistas Principales
         tituloTextView = findViewById(R.id.detalle_txt_titulo)
         descripcionTextView = findViewById(R.id.detalle_txt_descripcion)

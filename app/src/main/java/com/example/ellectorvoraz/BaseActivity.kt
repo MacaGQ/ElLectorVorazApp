@@ -9,6 +9,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ellectorvoraz.util.SharedPreferencesManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.core.view.size
+import androidx.core.view.get
 
 abstract class BaseActivity(): AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,7 +59,6 @@ abstract class BaseActivity(): AppCompatActivity() {
                 return@setOnItemSelectedListener true
             }
             handleNavigation(item.itemId)
-            true
 
             bottomNav.post{
                 updateBottomNavSelection(bottomNav)
@@ -71,9 +72,9 @@ abstract class BaseActivity(): AppCompatActivity() {
             R.id.navigation_home -> {
                 val intent = Intent(this, P7_PantallaMenuOpcionesReutilizable::class.java).apply {
                     putExtra(P7_PantallaMenuOpcionesReutilizable.EXTRA_MENU_TYPE, "LIBRERIA_GENERAL")
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 }
                 startActivity(intent)
-                true
             }
             R.id.navigation_shopping -> {
                 val intent = Intent(this, P82_PantallaTrasnsaccionesReutilizable::class.java).apply {
@@ -81,7 +82,6 @@ abstract class BaseActivity(): AppCompatActivity() {
                     flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 }
                 startActivity(intent)
-                true
             }
             R.id.navigation_notifications -> {
                 Toast.makeText(
@@ -89,7 +89,6 @@ abstract class BaseActivity(): AppCompatActivity() {
                     "Sección 'Avisos' en desarrollo",
                     Toast.LENGTH_SHORT
                 ).show()
-                false
             }
             R.id.navigation_profile -> {
                 val userId = SharedPreferencesManager.getUserId(this)
@@ -97,6 +96,7 @@ abstract class BaseActivity(): AppCompatActivity() {
                     val intent = Intent(this, P25_SeleccionElemento::class.java).apply {
                         putExtra("EXTRA_ITEM_ID", userId)
                         putExtra("EXTRA_CATALOG_TYPE", "PERFIL_USUARIO")
+                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     }
                     startActivity(intent)
                 } else {
@@ -104,11 +104,9 @@ abstract class BaseActivity(): AppCompatActivity() {
                         this,
                         "Error: Vuelva a iniciar sesión",
                         Toast.LENGTH_SHORT
-                    )
+                    ).show()
                 }
-                true
             }
-            else -> false
         }
     }
 
@@ -123,14 +121,26 @@ abstract class BaseActivity(): AppCompatActivity() {
     private fun updateBottomNavSelection(bottomNav: BottomNavigationView) {
 
         bottomNav.menu.setGroupCheckable(0, true, false)
-        for (i in 0 until bottomNav.menu.size()) {
-            bottomNav.menu.getItem(i).isChecked = false
+        for (i in 0 until bottomNav.menu.size) {
+            bottomNav.menu[i].isChecked = false
         }
         bottomNav.menu.setGroupCheckable(0, true, true)
 
         val itemToSelect = when (this) {
-            is P7_PantallaMenuOpcionesReutilizable -> R.id.navigation_home
-            is P82_PantallaTrasnsaccionesReutilizable -> R.id.navigation_shopping
+            is P7_PantallaMenuOpcionesReutilizable -> {
+                if(intent.getStringExtra("EXTRA_MENU_TYPE") == "LIBRERIA_GENERAL") {
+                    R.id.navigation_home
+                } else {
+                    null
+                }
+            }
+            is P82_PantallaTrasnsaccionesReutilizable -> {
+                if (intent.getStringExtra("EXTRA_TRANSACTION_TYPE") == P82_PantallaTrasnsaccionesReutilizable.TYPE_VENTA) {
+                    R.id.navigation_shopping
+                } else {
+                    null
+                }
+            }
             is P25_SeleccionElemento -> {
                 if(intent.getStringExtra("EXTRA_CATALOG_TYPE") == "PERFIL_USUARIO") {
                     R.id.navigation_profile
