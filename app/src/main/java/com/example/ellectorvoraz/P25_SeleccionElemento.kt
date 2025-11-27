@@ -1,11 +1,12 @@
 package com.example.ellectorvoraz
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -44,7 +45,7 @@ class P25_SeleccionElemento : BaseActivity() {
     private val editLauncher =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             fetchItemDetails(currentItemId, currentCatalogType!!)
             Toast.makeText(
                 this,
@@ -101,22 +102,7 @@ class P25_SeleccionElemento : BaseActivity() {
                 if (currentCatalogType == "PEDIDOS" && currentPedido != null) {
                     mostrarDialogoCambioEstado()
                 } else {
-                    val intent =
-                        Intent(this, P12_PantallaDeRegistroReutilizable::class.java).apply {
-                            putExtra(
-                                P12_PantallaDeRegistroReutilizable.EXTRA_MODE,
-                                P12_PantallaDeRegistroReutilizable.MODE_EDIT
-                            )
-                            putExtra(
-                                P12_PantallaDeRegistroReutilizable.EXTRA_FORM_TYPE,
-                                currentCatalogType
-                            )
-                            putExtra(
-                                P12_PantallaDeRegistroReutilizable.EXTRA_ITEM_ID,
-                                currentItemId
-                            )
-                        }
-                    editLauncher.launch(intent)
+                    mostrarDialogoAcciones()
                 }
                 true
             }
@@ -335,6 +321,128 @@ class P25_SeleccionElemento : BaseActivity() {
         }
 
         detalleRecyclerView.adapter = DetalleAdapter(caracteristicas)
+    }
+
+    private fun mostrarDialogoAcciones() {
+        val opciones = mutableListOf<String>()
+
+        opciones.add("Editar Detalles")
+
+        if(currentCatalogType in listOf("LIBROS", "REVISTAS", "ARTICULOS")) {
+            opciones.add("Ajustar Stock")
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Seleccionar Accion")
+            .setItems(opciones.toTypedArray()) { _, which ->
+                when (opciones[which]) {
+                    "Editar Detalles" -> lanzarPantallaEdicion()
+                    "Ajustar Stock" -> mostrarDialogoAjusteStock()
+                }
+            }
+            .setNegativeButton("Cancelar") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun lanzarPantallaEdicion() {
+        val intent = Intent(this, P12_PantallaDeRegistroReutilizable::class.java).apply {
+            putExtra(
+                P12_PantallaDeRegistroReutilizable.EXTRA_MODE,
+                P12_PantallaDeRegistroReutilizable.MODE_EDIT
+            )
+            putExtra(
+                P12_PantallaDeRegistroReutilizable.EXTRA_FORM_TYPE,
+                currentCatalogType
+            )
+            putExtra(
+                P12_PantallaDeRegistroReutilizable.EXTRA_ITEM_ID,
+                currentItemId
+            )
+        }
+        editLauncher.launch(intent)
+    }
+
+    private fun mostrarDialogoAjusteStock() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_ajuste_stock, null)
+        val cantidadInput = dialogView.findViewById<EditText>(R.id.input_cantidad)
+        val btnAgregar = dialogView.findViewById<Button>(R.id.btn_agregar)
+        val btnQuitar = dialogView.findViewById<Button>(R.id.btn_quitar)
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Ajustar Stock")
+            .setView(dialogView)
+            .setNegativeButton("Cancelar", null)
+            .create()
+
+        btnAgregar.setOnClickListener {
+            val cantidad = cantidadInput.text.toString().toIntOrNull()
+            if (cantidad != null && cantidad > 0) {
+                ajustarStock(cantidad)
+                dialog.dismiss()
+            } else {
+                cantidadInput.error = "Ingrese una cantidad válida"
+            }
+        }
+
+        btnQuitar.setOnClickListener {
+            val cantidad = cantidadInput.text.toString().toIntOrNull()
+            if (cantidad != null && cantidad > 0) {
+                ajustarStock(-cantidad)
+                dialog.dismiss()
+            } else {
+                cantidadInput.error = "Ingrese una cantidad válida"
+            }
+        }
+
+        dialog.show()
+
+    }
+
+    private fun ajustarStock(cantidad: Int) {
+        val tipoProducto = currentCatalogType
+        val id = currentItemId
+
+        if (tipoProducto == null || tipoProducto !in listOf("LIBROS", "REVISTAS", "ARTICULOS")) {
+            Toast.makeText(this, "Esta operacion no es valida para este tipo de producto", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        lifecycleScope.launch {
+            try {
+                val response = creationRepository.ajustarStock(tipoProducto, id, cantidad)
+
+                if (response.isSuccessful) {
+                    Toast.makeText(
+                        this@P25_SeleccionElemento,
+                        "Stock actualizado correctamente",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    fetchItemDetails(id, tipoProducto)
+                } else {
+                    val codigoError = response.code()
+                    val mensajeError = when(codigoError) {
+                        404 -> "No se encontro el producto"
+                        409 -> "Stock Insuficiente"
+                        else -> "Error al actualizar el stock"
+                    }
+
+                    Toast.makeText(
+                        this@P25_SeleccionElemento,
+                        "Error: $mensajeError",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } catch (e: Exception) {
+                Log.e("AJUSTAR_STOCK_ERROR", "Error al ajustar el stock para $tipoProducto/$id", e)
+                Toast.makeText(
+                    this@P25_SeleccionElemento,
+                    "Error de conexión",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     private fun mostrarDialogoCambioEstado() {

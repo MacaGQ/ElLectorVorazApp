@@ -1,5 +1,6 @@
 package com.example.ellectorvoraz.data.repository
 
+import com.example.ellectorvoraz.data.model.StockRequest
 import com.example.ellectorvoraz.data.network.ApiService
 import com.example.ellectorvoraz.data.repository.creators.LibroCreator
 import com.example.ellectorvoraz.data.repository.creators.ItemCreator
@@ -17,7 +18,7 @@ import com.example.ellectorvoraz.data.repository.updaters.RevistaUpdater
 
 import retrofit2.Response
 
-class CreationRepository (api: ApiService){
+class CreationRepository (private val api: ApiService) {
 
     // Item reutilizable para todos los elementos que deben registrarse
 
@@ -55,10 +56,18 @@ class CreationRepository (api: ApiService){
         id: Int,
         data: Map<String, String>,
         extraData: Map<String, Any?>
-    ): Response <out Any> {
+    ): Response<out Any> {
         val updater = updaters[type]
             ?: throw IllegalArgumentException("No hay actualizacion definida para $type")
 
         return updater.update(id, data, extraData)
+    }
+
+    suspend fun ajustarStock(tipoProducto: String, id: Int, cantidad: Int): Response<Unit> {
+        val tipoEndpoint = tipoProducto.lowercase()
+
+        val requestBody = StockRequest(cantidad)
+
+        return api.ajustarStock(tipoEndpoint, id, requestBody)
     }
 }

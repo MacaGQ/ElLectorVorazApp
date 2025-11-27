@@ -25,7 +25,7 @@ class RevistaUpdater (private val api: ApiService): ItemUpdater {
             numero = data["numero"]!!.toInt(),
             issn = data["issn"]!!,
             precio = data["precio"]!!.toDouble(),
-            stock = data["stock"]!!.toInt(),
+            stock = 0,
             proveedorId = proveedorId,
         )
 

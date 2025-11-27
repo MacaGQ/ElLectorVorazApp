@@ -27,7 +27,7 @@ class LibroUpdater (private val api: ApiService): ItemUpdater {
             genero = data["genero"]!!,
             seccion = data["seccion"]!!,
             precio = data["precio"]!!.toDouble(),
-            stock = data["stock"]!!.toInt(),
+            stock = 0,
             proveedorId = proveedorId,
         )
         return api.updateLibro(id, request)
