@@ -26,7 +26,6 @@ import com.example.ellectorvoraz.data.model.Usuario
 import com.example.ellectorvoraz.data.model.Venta
 import com.example.ellectorvoraz.data.network.RetrofitClient
 import com.example.ellectorvoraz.data.repository.CreationRepository
-import com.example.ellectorvoraz.util.SharedPreferencesManager
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.async
 
@@ -79,7 +78,7 @@ class P25_SeleccionElemento : BaseActivity() {
         val api = RetrofitClient.getInstance(this)
         creationRepository = CreationRepository(api)
 
-        if (itemId == -1 || catalogType == null) {
+        if (catalogType != "PERFIL_USUARIO" && (itemId == -1 || catalogType == null)) {
             Toast.makeText(this, "Error: No se pudo cargar el item", Toast.LENGTH_SHORT).show()
             finish()
             return
@@ -117,31 +116,31 @@ class P25_SeleccionElemento : BaseActivity() {
                 val api = RetrofitClient.getInstance(this@P25_SeleccionElemento)
 
                 if (type == "PERFIL_USUARIO") {
-                    val usuario = SharedPreferencesManager.getUser(this@P25_SeleccionElemento)
+                    val usuarioResponseDeferred = async {api.getPerfilUsuario()}
+                    val usuarioResponse = usuarioResponseDeferred.await()
 
-                    if (usuario != null) {
-                        try {
-                            val rolDeferrer = async { api.getRolById(usuario.rolId) }
-                            val rolResponse = rolDeferrer.await()
+                    if (usuarioResponse.isSuccessful) {
+                        val usuario = usuarioResponse.body()
+
+                        if (usuario != null) {
+                            val rolResponse = api.getRolById(usuario.rolId)
                             val rol = rolResponse.body()
-
                             updateUiWithItem(usuario, rol)
-                        } catch (e: Exception) {
-                            Log.e("PERFIL_ROL_ERROR", "Error al obtener el rol del usuario", e)
-                            Toast.makeText(
-                                this@P25_SeleccionElemento,
-                                "Error al obtener el rol del usuario",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            updateUiWithItem(usuario, null)
-                        }
-                    } else {
+                        } else {
                             Toast.makeText(
                                 this@P25_SeleccionElemento,
                                 "No se encontraron datos del perfil",
                                 Toast.LENGTH_SHORT
                             ).show ()
+                        }
+                    } else {
+                        Toast.makeText(
+                            this@P25_SeleccionElemento,
+                            "Error al obtener el perfil del usuario",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+
                 } else if (type == "PEDIDOS") {
                     val pedidoDeferred = async { api.getPedidoId(id) }
                     val detallesDeferred = async { api.getDetallePedido(id) }
@@ -163,6 +162,7 @@ class P25_SeleccionElemento : BaseActivity() {
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
+
                     } else {
                         Toast.makeText(
                             this@P25_SeleccionElemento,
@@ -227,6 +227,11 @@ class P25_SeleccionElemento : BaseActivity() {
                 val nombreRol = rol?.nombre
                 tituloTextView.text = "Usuario: ${item.username}"
                 descripcionTextView.text = "Rol: $nombreRol"
+
+                val fechaFormateada = item.createdAt?.split("T")?.get(0) ?: "Fecha no disponible"
+
+                caracteristicas.add(DetalleCaracteristica("Fecha de Creacion", fechaFormateada))
+
             }
             is Libro -> {
                 // Campos principales

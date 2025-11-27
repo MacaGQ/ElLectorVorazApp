@@ -11,4 +11,7 @@ data class Usuario(
 
     @SerializedName("rol_id")
     val rolId: Int,
+
+    @SerializedName("created_at")
+    val createdAt: String?
 )

@@ -10,8 +10,6 @@ class VentaCreator (private val api: ApiService) : ItemCreator {
         data: Map<String, String>,
         extraData: Map<String, Any?>
     ): Response<out Any> {
-        val usuarioId = extraData["usuarioId"] as? Int ?: throw IllegalArgumentException("No se pudo identificar al venededor")
-
         @Suppress("UNCHECKED_CAST")
         val detalle = extraData["detalle"] as? List<DetalleVentaRequest> ?: throw IllegalArgumentException("El detalle de la venta no puede estar vacío")
 
@@ -22,7 +20,6 @@ class VentaCreator (private val api: ApiService) : ItemCreator {
         }
 
         val ventaRequest = VentaRequest(
-            usuarioId = usuarioId,
             total = total,
             detalle = detalle
         )

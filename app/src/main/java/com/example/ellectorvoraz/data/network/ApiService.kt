@@ -19,6 +19,7 @@ import com.example.ellectorvoraz.data.model.Revista
 import com.example.ellectorvoraz.data.model.RevistaRequest
 import com.example.ellectorvoraz.data.model.Rol
 import com.example.ellectorvoraz.data.model.StockRequest
+import com.example.ellectorvoraz.data.model.Usuario
 import com.example.ellectorvoraz.data.model.Venta
 import com.example.ellectorvoraz.data.model.VentaRequest
 import retrofit2.http.GET
@@ -45,6 +46,11 @@ interface ApiService {
     @GET("roles")
     suspend fun getRoles(): Response<List<Rol>>
 
+    // ----- Perfil -----
+
+    @GET("auth/perfil")
+    suspend fun getPerfilUsuario(): Response<Usuario>
+
     // Obtener rol por id para el perfil
     @GET("roles/{id}")
     suspend fun getRolById(@Path("id") id: Int): Response<Rol>
@@ -52,13 +58,12 @@ interface ApiService {
 
     // ----- Productos (Generico para todos) -----
 
-    @PATCH("{tipoProducto}/stock/{id}")
+    @PATCH ("{tipoProducto}/stock/{id}")
     suspend fun ajustarStock(
         @Path("tipoProducto") tipoProducto: String,
         @Path("id") id: Int,
         @Body body: StockRequest
     ): Response<Unit>
-
 
     // ----- Libros -----
 

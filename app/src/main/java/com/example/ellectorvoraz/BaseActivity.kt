@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.ellectorvoraz.util.SharedPreferencesManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.core.view.size
 import androidx.core.view.get
@@ -78,7 +77,10 @@ abstract class BaseActivity(): AppCompatActivity() {
             }
             R.id.navigation_shopping -> {
                 val intent = Intent(this, P82_PantallaTrasnsaccionesReutilizable::class.java).apply {
-                    putExtra(P82_PantallaTrasnsaccionesReutilizable.EXTRA_TRANSACTION_TYPE, P82_PantallaTrasnsaccionesReutilizable.TYPE_VENTA)
+                    putExtra(
+                        P82_PantallaTrasnsaccionesReutilizable.EXTRA_TRANSACTION_TYPE,
+                        P82_PantallaTrasnsaccionesReutilizable.TYPE_VENTA
+                    )
                     flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 }
                 startActivity(intent)
@@ -91,21 +93,11 @@ abstract class BaseActivity(): AppCompatActivity() {
                 ).show()
             }
             R.id.navigation_profile -> {
-                val userId = SharedPreferencesManager.getUserId(this)
-                if (userId != -1) {
-                    val intent = Intent(this, P25_SeleccionElemento::class.java).apply {
-                        putExtra("EXTRA_ITEM_ID", userId)
-                        putExtra("EXTRA_CATALOG_TYPE", "PERFIL_USUARIO")
-                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    }
-                    startActivity(intent)
-                } else {
-                    Toast.makeText(
-                        this,
-                        "Error: Vuelva a iniciar sesión",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                val intent = Intent(this, P25_SeleccionElemento::class.java).apply {
+                    putExtra("EXTRA_CATALOG_TYPE", "PERFIL_USUARIO")
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 }
+                startActivity(intent)
             }
         }
     }
