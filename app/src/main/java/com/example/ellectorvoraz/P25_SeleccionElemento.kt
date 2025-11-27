@@ -21,9 +21,11 @@ import com.example.ellectorvoraz.data.model.Libro
 import com.example.ellectorvoraz.data.model.Pedido
 import com.example.ellectorvoraz.data.model.Proveedor
 import com.example.ellectorvoraz.data.model.Revista
+import com.example.ellectorvoraz.data.model.Usuario
 import com.example.ellectorvoraz.data.model.Venta
 import com.example.ellectorvoraz.data.network.RetrofitClient
 import com.example.ellectorvoraz.data.repository.CreationRepository
+import com.example.ellectorvoraz.util.SharedPreferencesManager
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.async
 
@@ -58,6 +60,8 @@ class P25_SeleccionElemento : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_p25_seleccion_elemento)
         setupTopBar("Detalle del Producto")
+
+        setupBottomNav()
 
         // Vistas Principales
         tituloTextView = findViewById(R.id.detalle_txt_titulo)
@@ -126,7 +130,33 @@ class P25_SeleccionElemento : BaseActivity() {
             try {
                 val api = RetrofitClient.getInstance(this@P25_SeleccionElemento)
 
-                if (type == "PEDIDOS") {
+                if (type == "PERFIL_USUARIO") {
+                    val usuario = SharedPreferencesManager.getUser(this@P25_SeleccionElemento)
+
+                    if (usuario != null) {
+                        try {
+                            val rolDeferrer = async { api.getRolById(usuario.rolId) }
+                            val rolResponse = rolDeferrer.await()
+                            val rol = rolResponse.body()
+
+                            updateUiWithItem(usuario, rol)
+                        } catch (e: Exception) {
+                            Log.e("PERFIL_ROL_ERROR", "Error al obtener el rol del usuario", e)
+                            Toast.makeText(
+                                this@P25_SeleccionElemento,
+                                "Error al obtener el rol del usuario",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            updateUiWithItem(usuario, null)
+                        }
+                    } else {
+                            Toast.makeText(
+                                this@P25_SeleccionElemento,
+                                "No se encontraron datos del perfil",
+                                Toast.LENGTH_SHORT
+                            ).show ()
+                    }
+                } else if (type == "PEDIDOS") {
                     val pedidoDeferred = async { api.getPedidoId(id) }
                     val detallesDeferred = async { api.getDetallePedido(id) }
 
@@ -201,11 +231,17 @@ class P25_SeleccionElemento : BaseActivity() {
         }
     }
 
-    private fun updateUiWithItem(item: Any) {
+    private fun updateUiWithItem(item: Any, rol: com.example.ellectorvoraz.data.model.Rol? = null) {
         // Lista vacia que almacena las caracteristicas
         val caracteristicas = mutableListOf<DetalleCaracteristica>()
 
         when (item) {
+            is Usuario -> {
+                setupTopBar("Mi Perfil")
+                val nombreRol = rol?.nombre
+                tituloTextView.text = "Usuario: ${item.username}"
+                descripcionTextView.text = "Rol: $nombreRol"
+            }
             is Libro -> {
                 // Campos principales
                 tituloTextView.text = item.titulo

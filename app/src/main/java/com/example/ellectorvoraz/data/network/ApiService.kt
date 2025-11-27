@@ -18,6 +18,7 @@ import com.example.ellectorvoraz.data.model.RegisterResponse
 import com.example.ellectorvoraz.data.model.Revista
 import com.example.ellectorvoraz.data.model.RevistaRequest
 import com.example.ellectorvoraz.data.model.Rol
+import com.example.ellectorvoraz.data.model.Usuario
 import com.example.ellectorvoraz.data.model.Venta
 import com.example.ellectorvoraz.data.model.VentaRequest
 import retrofit2.http.GET
@@ -42,6 +43,11 @@ interface ApiService {
     // Obtener roles para la pantalla de registro
     @GET("roles")
     suspend fun getRoles(): Response<List<Rol>>
+
+    // Obtener rol por id para el perfil
+    @GET("roles/{id}")
+    suspend fun getRolById(@Path("id") id: Int): Response<Rol>
+
 
     // ----- Libros -----
 
