@@ -20,7 +20,7 @@ class ArticuloUpdater (private val api: ApiService): ItemUpdater {
             nombre = data["nombre"]!!,
             marca = data["marca"]!!,
             precio = data["precio"]!!.toDouble(),
-            stock = data["stock"]!!.toInt(),
+            stock = 0,
             seccion = data["seccion"]!!,
             codigo = data["codigo"]!!,
             proveedorId = proveedorId

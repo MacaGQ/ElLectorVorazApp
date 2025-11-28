@@ -1,11 +1,12 @@
 package com.example.ellectorvoraz
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,7 +26,6 @@ import com.example.ellectorvoraz.data.model.Usuario
 import com.example.ellectorvoraz.data.model.Venta
 import com.example.ellectorvoraz.data.network.RetrofitClient
 import com.example.ellectorvoraz.data.repository.CreationRepository
-import com.example.ellectorvoraz.util.SharedPreferencesManager
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.async
 
@@ -44,7 +44,7 @@ class P25_SeleccionElemento : BaseActivity() {
     private val editLauncher =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             fetchItemDetails(currentItemId, currentCatalogType!!)
             Toast.makeText(
                 this,
@@ -78,7 +78,7 @@ class P25_SeleccionElemento : BaseActivity() {
         val api = RetrofitClient.getInstance(this)
         creationRepository = CreationRepository(api)
 
-        if (itemId == -1 || catalogType == null) {
+        if (catalogType != "PERFIL_USUARIO" && (itemId == -1 || catalogType == null)) {
             Toast.makeText(this, "Error: No se pudo cargar el item", Toast.LENGTH_SHORT).show()
             finish()
             return
@@ -101,22 +101,7 @@ class P25_SeleccionElemento : BaseActivity() {
                 if (currentCatalogType == "PEDIDOS" && currentPedido != null) {
                     mostrarDialogoCambioEstado()
                 } else {
-                    val intent =
-                        Intent(this, P12_PantallaDeRegistroReutilizable::class.java).apply {
-                            putExtra(
-                                P12_PantallaDeRegistroReutilizable.EXTRA_MODE,
-                                P12_PantallaDeRegistroReutilizable.MODE_EDIT
-                            )
-                            putExtra(
-                                P12_PantallaDeRegistroReutilizable.EXTRA_FORM_TYPE,
-                                currentCatalogType
-                            )
-                            putExtra(
-                                P12_PantallaDeRegistroReutilizable.EXTRA_ITEM_ID,
-                                currentItemId
-                            )
-                        }
-                    editLauncher.launch(intent)
+                    mostrarDialogoAcciones()
                 }
                 true
             }
@@ -131,31 +116,31 @@ class P25_SeleccionElemento : BaseActivity() {
                 val api = RetrofitClient.getInstance(this@P25_SeleccionElemento)
 
                 if (type == "PERFIL_USUARIO") {
-                    val usuario = SharedPreferencesManager.getUser(this@P25_SeleccionElemento)
+                    val usuarioResponseDeferred = async {api.getPerfilUsuario()}
+                    val usuarioResponse = usuarioResponseDeferred.await()
 
-                    if (usuario != null) {
-                        try {
-                            val rolDeferrer = async { api.getRolById(usuario.rolId) }
-                            val rolResponse = rolDeferrer.await()
+                    if (usuarioResponse.isSuccessful) {
+                        val usuario = usuarioResponse.body()
+
+                        if (usuario != null) {
+                            val rolResponse = api.getRolById(usuario.rolId)
                             val rol = rolResponse.body()
-
                             updateUiWithItem(usuario, rol)
-                        } catch (e: Exception) {
-                            Log.e("PERFIL_ROL_ERROR", "Error al obtener el rol del usuario", e)
-                            Toast.makeText(
-                                this@P25_SeleccionElemento,
-                                "Error al obtener el rol del usuario",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            updateUiWithItem(usuario, null)
-                        }
-                    } else {
+                        } else {
                             Toast.makeText(
                                 this@P25_SeleccionElemento,
                                 "No se encontraron datos del perfil",
                                 Toast.LENGTH_SHORT
                             ).show ()
+                        }
+                    } else {
+                        Toast.makeText(
+                            this@P25_SeleccionElemento,
+                            "Error al obtener el perfil del usuario",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+
                 } else if (type == "PEDIDOS") {
                     val pedidoDeferred = async { api.getPedidoId(id) }
                     val detallesDeferred = async { api.getDetallePedido(id) }
@@ -177,6 +162,7 @@ class P25_SeleccionElemento : BaseActivity() {
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
+
                     } else {
                         Toast.makeText(
                             this@P25_SeleccionElemento,
@@ -241,6 +227,11 @@ class P25_SeleccionElemento : BaseActivity() {
                 val nombreRol = rol?.nombre
                 tituloTextView.text = "Usuario: ${item.username}"
                 descripcionTextView.text = "Rol: $nombreRol"
+
+                val fechaFormateada = item.createdAt?.split("T")?.get(0) ?: "Fecha no disponible"
+
+                caracteristicas.add(DetalleCaracteristica("Fecha de Creacion", fechaFormateada))
+
             }
             is Libro -> {
                 // Campos principales
@@ -335,6 +326,128 @@ class P25_SeleccionElemento : BaseActivity() {
         }
 
         detalleRecyclerView.adapter = DetalleAdapter(caracteristicas)
+    }
+
+    private fun mostrarDialogoAcciones() {
+        val opciones = mutableListOf<String>()
+
+        opciones.add("Editar Detalles")
+
+        if(currentCatalogType in listOf("LIBROS", "REVISTAS", "ARTICULOS")) {
+            opciones.add("Ajustar Stock")
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Seleccionar Accion")
+            .setItems(opciones.toTypedArray()) { _, which ->
+                when (opciones[which]) {
+                    "Editar Detalles" -> lanzarPantallaEdicion()
+                    "Ajustar Stock" -> mostrarDialogoAjusteStock()
+                }
+            }
+            .setNegativeButton("Cancelar") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun lanzarPantallaEdicion() {
+        val intent = Intent(this, P12_PantallaDeRegistroReutilizable::class.java).apply {
+            putExtra(
+                P12_PantallaDeRegistroReutilizable.EXTRA_MODE,
+                P12_PantallaDeRegistroReutilizable.MODE_EDIT
+            )
+            putExtra(
+                P12_PantallaDeRegistroReutilizable.EXTRA_FORM_TYPE,
+                currentCatalogType
+            )
+            putExtra(
+                P12_PantallaDeRegistroReutilizable.EXTRA_ITEM_ID,
+                currentItemId
+            )
+        }
+        editLauncher.launch(intent)
+    }
+
+    private fun mostrarDialogoAjusteStock() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_ajuste_stock, null)
+        val cantidadInput = dialogView.findViewById<EditText>(R.id.input_cantidad)
+        val btnAgregar = dialogView.findViewById<Button>(R.id.btn_agregar)
+        val btnQuitar = dialogView.findViewById<Button>(R.id.btn_quitar)
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Ajustar Stock")
+            .setView(dialogView)
+            .setNegativeButton("Cancelar", null)
+            .create()
+
+        btnAgregar.setOnClickListener {
+            val cantidad = cantidadInput.text.toString().toIntOrNull()
+            if (cantidad != null && cantidad > 0) {
+                ajustarStock(cantidad)
+                dialog.dismiss()
+            } else {
+                cantidadInput.error = "Ingrese una cantidad válida"
+            }
+        }
+
+        btnQuitar.setOnClickListener {
+            val cantidad = cantidadInput.text.toString().toIntOrNull()
+            if (cantidad != null && cantidad > 0) {
+                ajustarStock(-cantidad)
+                dialog.dismiss()
+            } else {
+                cantidadInput.error = "Ingrese una cantidad válida"
+            }
+        }
+
+        dialog.show()
+
+    }
+
+    private fun ajustarStock(cantidad: Int) {
+        val tipoProducto = currentCatalogType
+        val id = currentItemId
+
+        if (tipoProducto == null || tipoProducto !in listOf("LIBROS", "REVISTAS", "ARTICULOS")) {
+            Toast.makeText(this, "Esta operacion no es valida para este tipo de producto", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        lifecycleScope.launch {
+            try {
+                val response = creationRepository.ajustarStock(tipoProducto, id, cantidad)
+
+                if (response.isSuccessful) {
+                    Toast.makeText(
+                        this@P25_SeleccionElemento,
+                        "Stock actualizado correctamente",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    fetchItemDetails(id, tipoProducto)
+                } else {
+                    val codigoError = response.code()
+                    val mensajeError = when(codigoError) {
+                        404 -> "No se encontro el producto"
+                        409 -> "Stock Insuficiente"
+                        else -> "Error al actualizar el stock"
+                    }
+
+                    Toast.makeText(
+                        this@P25_SeleccionElemento,
+                        "Error: $mensajeError",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } catch (e: Exception) {
+                Log.e("AJUSTAR_STOCK_ERROR", "Error al ajustar el stock para $tipoProducto/$id", e)
+                Toast.makeText(
+                    this@P25_SeleccionElemento,
+                    "Error de conexión",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     private fun mostrarDialogoCambioEstado() {

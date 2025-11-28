@@ -1,6 +1,5 @@
 package com.example.ellectorvoraz
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
@@ -19,7 +18,6 @@ import com.example.ellectorvoraz.data.model.DetalleVentaRequest
 import com.example.ellectorvoraz.data.model.TransactionItem
 import com.example.ellectorvoraz.data.network.RetrofitClient
 import com.example.ellectorvoraz.data.repository.CreationRepository
-import com.example.ellectorvoraz.util.SharedPreferencesManager
 import kotlinx.coroutines.launch
 
 class P82_PantallaTrasnsaccionesReutilizable : BaseActivity() {
@@ -42,7 +40,7 @@ class P82_PantallaTrasnsaccionesReutilizable : BaseActivity() {
 
     private val lanzadorSeleccionEntidadPrincipal = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             val data: Intent? = result.data
             mainEntityId =
                 data?.getIntExtra(P21_PantallaCatalogoReutilizable.RESULT_SELECTED_ID, -1)
@@ -54,7 +52,7 @@ class P82_PantallaTrasnsaccionesReutilizable : BaseActivity() {
 
     private val lanzadorSeleccionProducto = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             val data: Intent? = result.data
             val productoId =
                 data?.getIntExtra(P21_PantallaCatalogoReutilizable.RESULT_SELECTED_ID, -1)
@@ -242,18 +240,6 @@ class P82_PantallaTrasnsaccionesReutilizable : BaseActivity() {
                 }
 
                 TYPE_VENTA -> {
-                    val vendedorId =
-                        SharedPreferencesManager.getUserId(this@P82_PantallaTrasnsaccionesReutilizable)
-                    if (vendedorId == -1) {
-                        Toast.makeText(
-                            this@P82_PantallaTrasnsaccionesReutilizable,
-                            "Error: No se pudo obtener el ID del vendedor",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        return@launch
-                    }
-                    extraData["usuarioId"] = vendedorId
-
                     val detalleVenta = itemsEnCarrito.map {
                         DetalleVentaRequest(
                             tipoProducto = it.tipoProducto,

@@ -1,6 +1,5 @@
 package com.example.ellectorvoraz
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -36,7 +35,7 @@ class P12_PantallaDeRegistroReutilizable : BaseActivity() {
     private var proveedorSeleccionadoId: Int? = null
 
     private val lanzadorSeleccion = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             val data: Intent? = result.data
             proveedorSeleccionadoId = data?.getIntExtra(P21_PantallaCatalogoReutilizable.RESULT_SELECTED_ID, -1)
             val nombreProveedor = data?.getStringExtra(P21_PantallaCatalogoReutilizable.RESULT_SELECTED_NAME)
@@ -82,9 +81,17 @@ class P12_PantallaDeRegistroReutilizable : BaseActivity() {
         setupTopBar(if (mode == MODE_EDIT) "EDITAR ${formScreen.title}" else formScreen.title)
         setupBottomNav()
 
+        val originalFields = formScreen.fields
+
+        val fieldsToShow = if (mode == MODE_EDIT && formType in listOf("LIBROS", "REVISTAS", "ARTICULOS")) {
+            originalFields.filter { it.key != "stock" }
+        } else {
+            originalFields
+        }
+
         // Cargar el RecyclerView con los campos
         val recyclerView = findViewById<RecyclerView>(R.id.form_recycler_view)
-        adapter = FormAdapter(formScreen.fields) { fieldKey, entityType ->
+        adapter = FormAdapter(fieldsToShow) { _, entityType ->
             when (entityType) {
                 "PROVEEDOR" -> {
                     val intent = Intent(this, P21_PantallaCatalogoReutilizable::class.java)
@@ -278,7 +285,7 @@ class P12_PantallaDeRegistroReutilizable : BaseActivity() {
                         "Guardado exitoso",
                         Toast.LENGTH_SHORT
                     ).show()
-                    setResult(Activity.RESULT_OK)
+                    setResult(RESULT_OK)
                     finish()
                 } else {
                     Toast.makeText(
